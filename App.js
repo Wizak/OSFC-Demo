@@ -1,20 +1,33 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import 'react-native-gesture-handler';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+import * as React from 'react';
+import { AppRegistry } from 'react-native';
+import { PaperProvider } from 'react-native-paper';
+import { NavigationContainer } from '@react-navigation/native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+import { name as appName } from './app.json';
+import { theme } from './src/core/theme';
+
+import AuthContextProvider from './src/contexts/auth';
+import App from './src';
+
+
+const Main = () => (
+  <PaperProvider theme={theme}>
+    <AuthContextProvider>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <SafeAreaView style={{ flex: 1 }}>
+            <App />
+          </SafeAreaView>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </AuthContextProvider>
+  </PaperProvider>
+);
+
+AppRegistry.registerComponent(appName, () => Main);
+
+
+export default Main;
