@@ -10,6 +10,7 @@ const AuthReducer = (prevState, action) => {
     case AuthActions.Loading:
       return {
         ...prevState,
+        error: null,
         isLoading: true,
       };
     case AuthActions.RestorePermissions:

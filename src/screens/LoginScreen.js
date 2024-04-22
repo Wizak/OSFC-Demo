@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { Text, StyleSheet } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import { useForm } from 'react-hook-form';
@@ -26,24 +26,21 @@ const formSchema = z.object({
 const LoginScreen = ({ navigation }) => {
   const { signIn, getState } = useAuth();
   const [ alertVisible, setAlertVisible ] = useState(false);
-
+  const { isLoading, error, permissions } = getState();
   const { control, handleSubmit } = useForm({
     resolver: zodResolver(formSchema),
   });
 
-  const { isLoading, error, permissions } = getState();
-
-  React.useEffect(() => {
+  useEffect(() => {
     setAlertVisible(!!error);
-  }, [ permissions?.email, permissions?.password, error ]);
+  }, [ permissions?.email, permissions?.password, error, onSubmit ]);
 
   const onSubmit = async ({ email, password }) => {
-    !!error && setAlertVisible(true);
     await signIn({ email, password });
   };
 
   return (
-    <Background>
+    <Background extraStyle={styles.container}>
       <Logo />
 
       <Header>OSFC Employee App</Header>
@@ -97,7 +94,14 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   text: {
     color: 'white',
-  }
+  },
+  container: {
+    padding: 20,
+    maxWidth: 340,
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 

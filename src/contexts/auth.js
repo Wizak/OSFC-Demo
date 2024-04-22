@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { AuthReducer } from '../reducers/auth';
 import { httpClient } from '../core/httpClient';
+import { AllowedRolesToUseApp } from '../core/enums';
 
 
 const AuthContext = React.createContext();
@@ -45,6 +46,10 @@ const AuthContextProvider = ({ children }) => {
         method: 'POST',
         body: JSON.stringify(data),
       }).then(async ({ json }) => {
+        if (!AllowedRolesToUseApp.includes(json.permissions.role)) {
+          error = 'Only OSFC is allowed to login'
+          return;
+        }
         try {
           await SecureStore.setItemAsync('token', json.token);
           await AsyncStorage.setItem('permissions', JSON.stringify(json.permissions));

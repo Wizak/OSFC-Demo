@@ -41,7 +41,6 @@ const MenuDrawerContent = (props) => {
   );
 };
 
-
 const AppMainSideMenuContent = (props) => (
   <ScrollView contentContainerStyle={styles.scrollView}>
     <SafeAreaView forceInset={styles.safeArea}>
@@ -58,6 +57,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1, 
+    paddingTop: 20,
     flexDirection: 'column', 
     justifyContent: 'space-between',
   },

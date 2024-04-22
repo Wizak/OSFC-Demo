@@ -1,9 +1,11 @@
 import React, { memo } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Avatar, Card, Title } from 'react-native-paper';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { Avatar, List } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
+import Header from '../components/Header';
 import Background from '../components/Background';
-import Paragraph from '../components/Paragraph';
+import { ListItemText, ListAccordionText } from '../components/lists/ListText';
 
 import { useAuth } from '../contexts/auth';
 
@@ -16,34 +18,62 @@ const ProfileScreen = ({ navigation }) => {
 
   return (
     <Background>
-      <View style={styles.container}>
-        <Avatar.Image size={150} source={require('../assets/profile-default.png')} style={styles.avatar} />
-        <Card style={styles.card}>
-          <Card.Content>
-            <Title>{permissions.name}</Title>
-            <Paragraph>Email: {permissions.email}</Paragraph>
-          </Card.Content>
-        </Card>
-      </View>
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView>
+          <View style={styles.container}>
+            <View style={styles.viewAvatar}>
+              <Avatar.Image size={150} source={require('../assets/profile-default.png')} />
+            </View>
+            <Header>{permissions.fullName}</Header>
+            <View style={styles.accordions}>
+              <List.Section title='Details'>
+                <List.AccordionGroup>
+                  <ListAccordionText title='General' icon='card-account-details'>
+                      <ListItemText title='E-mail' description={permissions.email} icon='email-outline' />
+                      <ListItemText title='Full Name' description={permissions.fullName} icon='account-box-outline' />
+                      <ListItemText title='Role' description={permissions.role} icon='briefcase-outline' />
+                  </ListAccordionText>
+                  <ListAccordionText title='Other' icon='text-account'>
+                      <ListItemText title='ID' description={permissions.id} icon='identifier' />
+                      <ListItemText title='Local' description={permissions.locale} icon='translate' />
+                      <ListItemText title='Time Refresh' description={permissions.time_refresh_order} icon='timer-cog-outline' />
+                  </ListAccordionText>
+                </List.AccordionGroup>
+              </List.Section>
+              <List.Section title='Settings'>
+                <List.AccordionGroup>
+                  <ListAccordionText title='Notifications' icon='bell'>
+                    <ListItemText title='NOT IMPLEMENTED' />
+                  </ListAccordionText>
+                  <ListAccordionText title='Settings' icon='cog'>
+                    <ListItemText title='NOT IMPLEMENTED' />
+                  </ListAccordionText>
+                </List.AccordionGroup>
+              </List.Section>
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     </Background>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  viewAvatar: {
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#f0f0f0', // Фоновий колір
+    padding: 10,
+  }, 
+  container: {
+    paddingBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  avatar: {
-    marginBottom: 20,
-  },
-  card: {
-    width: '80%',
-    elevation: 3, // Тінь для картки
+  accordions: {
+    width: '100%',
+    elevation: 3,
   },
 });
+
 
 export default memo(ProfileScreen);

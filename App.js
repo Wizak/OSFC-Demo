@@ -4,7 +4,8 @@ import * as React from 'react';
 import { AppRegistry } from 'react-native';
 import { PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StatusBar } from "expo-status-bar";
 
 import { name as appName } from './app.json';
 import { theme } from './src/core/theme';
@@ -18,10 +19,10 @@ const Main = () => (
     <AuthContextProvider>
       <SafeAreaProvider>
         <NavigationContainer>
-          <SafeAreaView style={{ flex: 1 }}>
-            <App />
-          </SafeAreaView>
+          <App />
         </NavigationContainer>
+        <StatusBar style="dark" 
+          translucent={true} hidden={false} />
       </SafeAreaProvider>
     </AuthContextProvider>
   </PaperProvider>
