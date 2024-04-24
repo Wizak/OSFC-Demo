@@ -4,7 +4,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import SecureNavigation from './controllers/SecureNavigation';
 import AppMainDrawerContent from './components/drawers/AppMainDrawer';
 
-import { ProfileScreen } from './screens';
+import { ProfileScreen, ToolsScreen } from './screens';
 
 
 const Drawer = createDrawerNavigator();
@@ -15,6 +15,7 @@ const AppScreen = () => (
     drawerContent={(props) => <AppMainDrawerContent {...props} />}
   >
     <Drawer.Screen name="Profile" component={ProfileScreen} />
+    <Drawer.Screen name="Tools" component={ToolsScreen} />
   </Drawer.Navigator>
 );
 

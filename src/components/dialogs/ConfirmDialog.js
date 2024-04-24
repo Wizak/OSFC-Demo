@@ -1,18 +1,19 @@
-import * as React from 'react';
+import React, { memo } from 'react';
 import { View } from 'react-native';
 import { Button, Dialog, Portal, Text } from 'react-native-paper';
 
 
-const DialogAlertMsg = ({ 
+const ConfirmDialog = ({ 
   message, 
-  setVisible,
+  onConfirm, onDecline,
+  confirmMessage = 'Confirm', 
+  declineMessage = 'Decline', 
   title = null, icon = null,
-  closeText = 'Close',
-  visible = false,
+  isVisible = false,
 }) => (
   <View>
     <Portal>
-      <Dialog visible={visible} onDismiss={() => setVisible(false)}>
+      <Dialog visible={isVisible} onDismiss={onDecline}>
         {!!title ? (
           <Dialog.Title>
             {title}
@@ -26,8 +27,11 @@ const DialogAlertMsg = ({
         </Text>
       </Dialog.Content>
       <Dialog.Actions>
-        <Button onPress={() => setVisible(false)}>
-          {closeText}
+        <Button onPress={onConfirm}>
+          {confirmMessage}
+        </Button>
+        <Button onPress={onDecline}>
+          {declineMessage}
         </Button>
       </Dialog.Actions>
       </Dialog>
@@ -36,4 +40,4 @@ const DialogAlertMsg = ({
 );
 
 
-export default DialogAlertMsg;
+export default memo(ConfirmDialog);

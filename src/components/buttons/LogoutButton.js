@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { memo } from 'react';
 
 import Button from './Button';
 import { useAuth } from '../../contexts/auth';
@@ -19,4 +19,4 @@ const LogoutButton = (props) => {
 };
 
 
-export default LogoutButton;
+export default memo(LogoutButton);

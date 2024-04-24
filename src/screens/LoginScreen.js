@@ -12,7 +12,7 @@ import Header from '../components/Header';
 import Button from '../components/buttons/Button';
 import TextInput from '../components/TextInput';
 import FormInput from '../controllers/FormInput';
-import DialogAlertMsg from '../components/dialogs/Alert';
+import DialogAlertMsg from '../components/dialogs/DialogAlertMsg';
 
 import { useAuth } from '../contexts/auth';
 
@@ -83,8 +83,8 @@ const LoginScreen = ({ navigation }) => {
 
       <DialogAlertMsg 
         icon='alert'
-        visible={alertVisible}
-        setVisible={setAlertVisible}
+        isVisible={alertVisible}
+        onClose={() => setAlertVisible(false)}
         message={error} 
       />
     </Background>

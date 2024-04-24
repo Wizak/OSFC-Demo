@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { memo } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import { Drawer as PaperDrawer } from 'react-native-paper';
 
@@ -64,4 +64,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default AppMainSideMenuContent;
+export default memo(AppMainSideMenuContent);

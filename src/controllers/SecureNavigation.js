@@ -19,7 +19,6 @@ const SecureNavigation = (screenProps) => {
           component={LoginScreen} 
           options={{
             animationTypeForReplace: state.isSignout ? 'pop' : 'push',
-            
           }}
         />
       ): (
