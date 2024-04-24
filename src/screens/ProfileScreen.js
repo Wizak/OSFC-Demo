@@ -11,7 +11,7 @@ import { useAuth } from '../contexts/auth';
 import { HumanRole } from '../core/consts';
 
 
-const ProfileScreen = ({ navigation }) => {
+const ProfileScreen = () => {
   const { getState } = useAuth();
   const { permissions } = getState();
 

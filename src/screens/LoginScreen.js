@@ -2,9 +2,9 @@ import React, { memo, useState, useEffect } from 'react';
 import { Text, StyleSheet } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 
 import Background from '../components/Background';
 import Logo from '../components/Logo';
@@ -16,17 +16,17 @@ import DialogAlertMsg from '../components/dialogs/DialogAlertMsg';
 
 import { useAuth } from '../contexts/auth';
 
-
 const formSchema = z.object({
   email: z.string().min(1, "Required").max(50, "Email must be no more than 50 characters").email(),
   password: z.string().min(1, "Required").max(50, "Password must be no more than 50 characters"),
 });
 
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = () => {
   const { signIn, getState } = useAuth();
   const [ alertVisible, setAlertVisible ] = useState(false);
   const { isLoading, error, permissions } = getState();
+
   const { control, handleSubmit } = useForm({
     resolver: zodResolver(formSchema),
   });

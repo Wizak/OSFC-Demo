@@ -1,5 +1,6 @@
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 const GALLERY_STORAGE_KEY = process.env.EXPO_PUBLIC_GALLERY_STORAGE_KEY;
+const BARCODES_STORAGE_KEY = process.env.EXPO_PUBLIC_BARCODES_STORAGE_KEY;
 
 const AllowedRolesToUseApp = [ 'osfc_manager', 'osfc_employee' ];
 const HumanRole = {
@@ -9,6 +10,7 @@ const HumanRole = {
 
 
 export { 
-    API_URL, GALLERY_STORAGE_KEY, 
-    AllowedRolesToUseApp, HumanRole 
+    API_URL, 
+    GALLERY_STORAGE_KEY, BARCODES_STORAGE_KEY,
+    AllowedRolesToUseApp, HumanRole, 
 };

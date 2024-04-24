@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { BottomNavigation } from 'react-native-paper';
 
-import ImageTiles from './CameraScreen';
-import Map from './LocationScreen';
+import CameraScreen from './CameraScreen';
+import LocationScreen from './LocationScreen';
+import ScanScreen from './ScanScreen';
 
 
 const ToolsScreen = ({ navigation }) => {
@@ -10,13 +11,13 @@ const ToolsScreen = ({ navigation }) => {
   const [routes] = React.useState([
     { key: 'camera', title: 'Camera', focusedIcon: 'camera', unfocusedIcon: 'camera-outline'},
     { key: 'location', title: 'Location', focusedIcon: 'map-marker', unfocusedIcon: 'map-marker-outline' },
-    // { key: 'scan', title: 'Scan', focusedIcon: 'credit-card-scan', unfocusedIcon: 'credit-card-scan-outline' },
+    { key: 'scan', title: 'Scan', focusedIcon: 'credit-card-scan', unfocusedIcon: 'credit-card-scan-outline' },
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
-    camera: ImageTiles,
-    location: Map,
-    // scan: RecentsRoute,
+    camera: CameraScreen,
+    location: LocationScreen,
+    scan: ScanScreen,
   });
 
   return (

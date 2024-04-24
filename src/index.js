@@ -13,9 +13,16 @@ const AppScreen = () => (
   <Drawer.Navigator 
     initialRouteName="Profile" 
     drawerContent={(props) => <AppMainDrawerContent {...props} />}
+    screenOptions={{ unmountOnBlur: true }}
   >
-    <Drawer.Screen name="Profile" component={ProfileScreen} />
-    <Drawer.Screen name="Tools" component={ToolsScreen} />
+    <Drawer.Screen 
+      name="Profile" 
+      component={ProfileScreen}
+      />
+    <Drawer.Screen 
+      name="Tools" 
+      component={ToolsScreen} 
+    />
   </Drawer.Navigator>
 );
 

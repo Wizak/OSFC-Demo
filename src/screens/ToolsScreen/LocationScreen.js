@@ -1,14 +1,14 @@
-import React, {useState, useEffect} from 'react';
+import React, { memo, useState, useEffect }  from 'react';
 import * as Location from 'expo-location';
-
-import { View, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { Card, Paragraph, Caption, Headline } from 'react-native-paper';
 
 import Background from '../../components/Background';
 
 
-const App = () => {
+const LocationScreen = () => {
   const [ position, setPosition ] = useState(null);
   const [ address, setAdress ] = useState(null);
 
@@ -28,56 +28,65 @@ const App = () => {
       });
 
       const currentAdress = await Location.reverseGeocodeAsync(coords);
-      setAdress(currentAdress);
+      setAdress(currentAdress[0]);
     };
     getCurrentPosition();
   }, []);
 
-  if (!position) return null;
+  if (!position || !address) return null;
 
   return (
     <Background>
-      <Card style={styles.card}>
-        <View style={styles.cardTitle}>
-          <Headline>
-            Current geolocation
-          </Headline>
-        </View>
-        <Card.Content style={styles.cardContent}>
-          <View>
-            <Paragraph>Latitude</Paragraph>
-            <Caption>{position.latitude}</Caption>
-          </View>
-          <View>
-            <Paragraph>Longitude</Paragraph>
-            <Caption>{position.longitude}</Caption>
-          </View>
-        </Card.Content>
-      </Card>
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView>
+          <Card style={styles.card}>
+            <View style={styles.cardTitle}>
+              <Headline>
+                Current geolocation
+              </Headline>
+              <Caption style={styles.address}>{address.formattedAddress}</Caption>
+            </View>
+            <Card.Content style={styles.cardContent}>
+              <View>
+                <Paragraph>Latitude</Paragraph>
+                <Caption>{position.latitude}</Caption>
+              </View>
+              <View>
+                <Paragraph>Longitude</Paragraph>
+                <Caption>{position.longitude}</Caption>
+              </View>
+            </Card.Content>
+          </Card>
 
-      <View style={styles.mapView}>
-        <MapView
-          style={styles.map}
-          initialRegion={position}
-          showsUserLocation={true}
-          showsMyLocationButton={true}
-          followsUserLocation={true}
-          showsCompass={true}
-          scrollEnabled={true}
-          zoomEnabled={true}
-          pitchEnabled={true}
-          rotateEnabled={true}
-        >
-          <Marker
-            coordinate={position}
-          />
-        </MapView>
-      </View>
+          <View style={styles.mapView}>
+            <MapView
+              style={styles.map}
+              initialRegion={position}
+              showsUserLocation={true}
+              showsMyLocationButton={true}
+              followsUserLocation={true}
+              showsCompass={true}
+              scrollEnabled={true}
+              zoomEnabled={true}
+              pitchEnabled={true}
+              rotateEnabled={true}
+            >
+              <Marker
+                coordinate={position}
+              />
+            </MapView>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     </Background>
   );
 };
 
 const styles = StyleSheet.create({
+  address: {
+    width: '60%',
+    textAlign: 'center'
+  },
   card: {
     margin: 20,
     borderRadius: 15,
@@ -85,6 +94,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     alignItems: 'center',
     justifyContent: 'center',
+    textAlign: 'center',
     padding: 10,
   },
   cardContent: {
@@ -95,7 +105,7 @@ const styles = StyleSheet.create({
   mapView: {
     margin: 20,
     marginTop: 0,
-    height: '75%',
+    height: 450,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -106,4 +116,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default App;
+export default memo(LocationScreen);

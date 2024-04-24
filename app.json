@@ -3,7 +3,7 @@
     "name": "OSFC-Demo",
     "slug": "OSFC-Demo",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "androidStatusBar": {
@@ -24,6 +24,7 @@
       "supportsTablet": true
     },
     "android": {
+      "softwareKeyboardLayoutMode" : "pan",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -36,7 +37,9 @@
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
         "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION"
+        "ACCESS_FINE_LOCATION",
+        "FOREGROUND_SERVICE", 
+        "ACCESS_BACKGROUND_LOCATION"
       ]
     },
     "web": {
@@ -49,10 +52,14 @@
         "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
       }],
       ["expo-location", {
-        "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+        "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
+        "isAndroidBackgroundLocationEnabled": "Allow $(PRODUCT_NAME) to use your location in the background"
       }],
       ["expo-build-properties", { 
         "android": { "usesCleartextTraffic": true } 
+      }],
+      ["expo-screen-orientation", {
+        "initialOrientation": "DEFAULT"
       }]
     ],
     "extra": {

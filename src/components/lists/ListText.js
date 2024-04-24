@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { List } from 'react-native-paper';
 
 
@@ -23,6 +23,18 @@ const ListItemText = ({ description, icon, ...rest }) => (
   />
 );
 
+const ListActionItem = ({ description, icon, onIconPress, ...rest }) => (
+  <List.Item 
+    {...rest} 
+    description={description === undefined ? description : description || '-'} 
+    left={(props) => (
+      <TouchableOpacity onPress={onIconPress}>
+        <List.Icon {...props} icon={icon} />
+      </TouchableOpacity>
+    )}
+  />
+);
+
 const styles = StyleSheet.create({
   accordionContent: {
     backgroundColor: '#F5FBFF',
@@ -30,4 +42,4 @@ const styles = StyleSheet.create({
 });
 
 
-export { ListAccordionText, ListItemText };
+export { ListAccordionText, ListItemText, ListActionItem };

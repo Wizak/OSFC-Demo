@@ -4,8 +4,8 @@ import { TextInput as Input } from 'react-native-paper';
 import { theme } from '../core/theme';
 
 
-const TextInput = ({ error, ...props }) => (
-  <View style={styles.container}>
+const TextInput = ({ error, extraContainerStyle, ...props }) => (
+  <View style={[ styles.container, extraContainerStyle ]}>
     <Input
       style={styles.input}
       selectionColor={theme.colors.primary}

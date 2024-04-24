@@ -11,12 +11,11 @@ import ConfirmDialog from '../../components/dialogs/ConfirmDialog';
 
 import { tryAsyncStorageValueByKey } from '../../core/utils';
 import { GALLERY_STORAGE_KEY } from '../../core/consts';
+import { useAuth } from '../../contexts/auth';
 
-
-const restoreFileUris = async () => (
-  await tryAsyncStorageValueByKey({ key: GALLERY_STORAGE_KEY })
+const makePersonalUserStorageKey = (permissions) => (
+  `${GALLERY_STORAGE_KEY}-user:${permissions?.id}`
 );
-
 
 const ImageTile = ({ onPress, ...props }) => (
   <TouchableOpacity onPress={() => onPress(props)}>
@@ -24,21 +23,31 @@ const ImageTile = ({ onPress, ...props }) => (
   </TouchableOpacity>
 );
 
-const ImageTiles = () => {
+const CameraScreen = () => {
+  const { getState } = useAuth();
   const [ fileUris, setFileUris ] = useState([]);
   const [ isVisiblePickerModal, setIsVisiblePickerModal ] = useState(false);
   const [ error, setError ] = useState(null);
   const [ selectedFileUri, setSelectedFileUri ] = useState(null);
 
+  const { permissions } = getState();
+  const galleryStorageKey = makePersonalUserStorageKey(permissions);
+
+  const restoreFileUris = async () => (
+    await tryAsyncStorageValueByKey({ key: galleryStorageKey })
+  );
+
   useEffect(() => {
     const _restoreFileUris = async () => {
       const fileStorageUris = await tryAsyncStorageValueByKey({ 
-        key: GALLERY_STORAGE_KEY 
+        key: galleryStorageKey 
       }) || [];
       setFileUris(fileStorageUris);
     };
-    _restoreFileUris();
-  }, [ fileUris, tryAsyncStorageValueByKey ]);
+    permissions && _restoreFileUris();
+  }, [ galleryStorageKey, tryAsyncStorageValueByKey ]);
+
+  if (!permissions) return null;
 
   const handleImageUploading = React.useCallback(async (hardwareApiResp) => {
     if (!hardwareApiResp.canceled) {
@@ -47,13 +56,13 @@ const ImageTiles = () => {
       const newFileUris = [ uri, ...fileStorageUris ];
 
       await tryAsyncStorageValueByKey({ 
-        key: GALLERY_STORAGE_KEY, 
+        key: galleryStorageKey, 
         value: newFileUris,
         action: 'set', 
       });
       setFileUris(newFileUris);
     }
-  }, [ GALLERY_STORAGE_KEY, restoreFileUris, tryAsyncStorageValueByKey ]);
+  }, [ galleryStorageKey, restoreFileUris, tryAsyncStorageValueByKey ]);
 
   const onFileDelete = useCallback(async () => {
     if (!!selectedFileUri) {
@@ -63,7 +72,7 @@ const ImageTiles = () => {
       if (selecteFileUriIndex != null) {
         newFileStorageUris.splice(selecteFileUriIndex, 1);
         await tryAsyncStorageValueByKey({ 
-          key: GALLERY_STORAGE_KEY, 
+          key: galleryStorageKey, 
           value: newFileStorageUris,
           action: 'set'
         });
@@ -71,7 +80,7 @@ const ImageTiles = () => {
         setSelectedFileUri(null);
       }
     }
-  }, [ GALLERY_STORAGE_KEY, selectedFileUri, restoreFileUris, tryAsyncStorageValueByKey ]);
+  }, [ galleryStorageKey, selectedFileUri, restoreFileUris, tryAsyncStorageValueByKey ]);
 
   const onGalleryPress = useCallback(async () => {
     setIsVisiblePickerModal(false);
@@ -162,4 +171,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default memo(ImageTiles);
+export default memo(CameraScreen);
