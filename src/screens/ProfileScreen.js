@@ -8,6 +8,7 @@ import Background from '../components/Background';
 import { ListItemText, ListAccordionText } from '../components/lists/ListText';
 
 import { useAuth } from '../contexts/auth';
+import { HumanRole } from '../core/consts';
 
 
 const ProfileScreen = ({ navigation }) => {
@@ -31,7 +32,7 @@ const ProfileScreen = ({ navigation }) => {
                   <ListAccordionText title='General' icon='card-account-details'>
                       <ListItemText title='E-mail' description={permissions.email} icon='email-outline' />
                       <ListItemText title='Full Name' description={permissions.fullName} icon='account-box-outline' />
-                      <ListItemText title='Role' description={permissions.role} icon='briefcase-outline' />
+                      <ListItemText title='Role' description={HumanRole[permissions.role]} icon='briefcase-outline' />
                   </ListAccordionText>
                   <ListAccordionText title='Other' icon='text-account'>
                       <ListItemText title='ID' description={permissions.id} icon='identifier' />

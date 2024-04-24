@@ -10,10 +10,11 @@ import DialogAlertMsg from '../../components/dialogs/DialogAlertMsg';
 import ConfirmDialog from '../../components/dialogs/ConfirmDialog';
 
 import { tryAsyncStorageValueByKey } from '../../core/utils';
+import { GALLERY_STORAGE_KEY } from '../../core/consts';
 
 
-const restoreFileUris = async (fileStorageKey) => (
-  await tryAsyncStorageValueByKey({ key: fileStorageKey })
+const restoreFileUris = async () => (
+  await tryAsyncStorageValueByKey({ key: GALLERY_STORAGE_KEY })
 );
 
 
@@ -29,12 +30,10 @@ const ImageTiles = () => {
   const [ error, setError ] = useState(null);
   const [ selectedFileUri, setSelectedFileUri ] = useState(null);
 
-  const fileStorageKey = 'OSFC-gallery-uris';
-
   useEffect(() => {
     const _restoreFileUris = async () => {
       const fileStorageUris = await tryAsyncStorageValueByKey({ 
-        key: fileStorageKey 
+        key: GALLERY_STORAGE_KEY 
       }) || [];
       setFileUris(fileStorageUris);
     };
@@ -44,27 +43,27 @@ const ImageTiles = () => {
   const handleImageUploading = React.useCallback(async (hardwareApiResp) => {
     if (!hardwareApiResp.canceled) {
       const { uri } = hardwareApiResp.assets[0];
-      const fileStorageUris = await restoreFileUris(fileStorageKey) || [];
+      const fileStorageUris = await restoreFileUris() || [];
       const newFileUris = [ uri, ...fileStorageUris ];
 
       await tryAsyncStorageValueByKey({ 
-        key: fileStorageKey, 
+        key: GALLERY_STORAGE_KEY, 
         value: newFileUris,
         action: 'set', 
       });
       setFileUris(newFileUris);
     }
-  }, [ fileStorageKey, restoreFileUris, tryAsyncStorageValueByKey ]);
+  }, [ GALLERY_STORAGE_KEY, restoreFileUris, tryAsyncStorageValueByKey ]);
 
   const onFileDelete = useCallback(async () => {
     if (!!selectedFileUri) {
-      const newFileStorageUris = await restoreFileUris(fileStorageKey) || [];
+      const newFileStorageUris = await restoreFileUris() || [];
       const selecteFileUriIndex = newFileStorageUris.indexOf(selectedFileUri);
 
       if (selecteFileUriIndex != null) {
         newFileStorageUris.splice(selecteFileUriIndex, 1);
         await tryAsyncStorageValueByKey({ 
-          key: fileStorageKey, 
+          key: GALLERY_STORAGE_KEY, 
           value: newFileStorageUris,
           action: 'set'
         });
@@ -72,7 +71,7 @@ const ImageTiles = () => {
         setSelectedFileUri(null);
       }
     }
-  }, [ fileStorageKey, selectedFileUri, restoreFileUris, tryAsyncStorageValueByKey ]);
+  }, [ GALLERY_STORAGE_KEY, selectedFileUri, restoreFileUris, tryAsyncStorageValueByKey ]);
 
   const onGalleryPress = useCallback(async () => {
     setIsVisiblePickerModal(false);

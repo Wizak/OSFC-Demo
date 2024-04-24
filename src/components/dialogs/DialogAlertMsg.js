@@ -7,11 +7,11 @@ const DialogAlertMsg = ({
   message, onClose,
   title = null, icon = null,
   closeText = 'Close',
-  visible = false,
+  isVisible = false,
 }) => (
   <View>
     <Portal>
-      <Dialog visible={visible} onDismiss={onClose}>
+      <Dialog visible={isVisible} onDismiss={onClose}>
         {!!title ? (
           <Dialog.Title>
             {title}

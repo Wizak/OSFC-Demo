@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { AuthReducer } from '../reducers/auth';
 import { httpClient } from '../core/httpClient';
-import { AllowedRolesToUseApp } from '../core/enums';
+import { AllowedRolesToUseApp } from '../core/consts';
 
 
 const AuthContext = React.createContext();

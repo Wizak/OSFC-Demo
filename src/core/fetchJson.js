@@ -1,3 +1,6 @@
+import { API_URL } from '../core/consts';
+
+
 class HttpError extends Error {
   constructor(message, status, body = null) {
     super(message);
@@ -13,7 +16,6 @@ class HttpError extends Error {
   }
 };
 
-const API_BASE_URL = "http://osfc-test.userlogin.eu:8000"
 
 const createHeadersFromOptions = (options) => {
   const requestHeaders = (options.headers ||
@@ -37,7 +39,7 @@ const createHeadersFromOptions = (options) => {
 const fetchJson = (url, options) => {
   const requestHeaders = createHeadersFromOptions(options);
 
-  return fetch(API_BASE_URL + url, { ...options, headers: requestHeaders })
+  return fetch(API_URL + url, { ...options, headers: requestHeaders })
     .then(response =>
       response.text().then(text => ({
         status: response.status,
@@ -67,4 +69,4 @@ const fetchJson = (url, options) => {
 };
 
 
-export { fetchJson, API_BASE_URL };
+export { fetchJson };

@@ -9,7 +9,8 @@ import Background from '../../components/Background';
 
 
 const App = () => {
-  const [position, setPosition] = useState(null);
+  const [ position, setPosition ] = useState(null);
+  const [ address, setAdress ] = useState(null);
 
   useEffect(() => {
     const getCurrentPosition = async () => {
@@ -25,6 +26,9 @@ const App = () => {
         latitudeDelta: 0.0421,
         longitudeDelta: 0.0421,
       });
+
+      const currentAdress = await Location.reverseGeocodeAsync(coords);
+      setAdress(currentAdress);
     };
     getCurrentPosition();
   }, []);
