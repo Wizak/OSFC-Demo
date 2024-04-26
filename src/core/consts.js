@@ -8,9 +8,13 @@ const HumanRole = {
     'osfc_employee': 'Employee',
 };
 
+const YesNoEnum = {
+    false: 'No',
+    true: 'Yes',
+};
 
 export { 
     API_URL, 
     GALLERY_STORAGE_KEY, BARCODES_STORAGE_KEY,
-    AllowedRolesToUseApp, HumanRole, 
+    AllowedRolesToUseApp, HumanRole, YesNoEnum,
 };

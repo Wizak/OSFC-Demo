@@ -1,10 +1,11 @@
 import React, { memo, useState, useEffect }  from 'react';
 import * as Location from 'expo-location';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, Text, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { Card, Paragraph, Caption, Headline } from 'react-native-paper';
 
+import LoaderMask from '../../components/LoaderMask';
 import Background from '../../components/Background';
 
 
@@ -33,7 +34,9 @@ const LocationScreen = () => {
     getCurrentPosition();
   }, []);
 
-  if (!position || !address) return null;
+  if (!position || !address) {
+    return <LoaderMask animating size={50} />;
+  }
 
   return (
     <Background>

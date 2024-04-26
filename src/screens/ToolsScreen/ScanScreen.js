@@ -9,12 +9,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import Background from '../../components/Background';
 import Button from '../../components/buttons/Button';
-import TextInput from '../../components/TextInput';
+import TextInput from '../../components/inputs/TextInput';
 import FormInput from '../../controllers/FormInput';
 import Divider from '../../components/Divider';
 
 import DialogAlertMsg from '../../components/dialogs/DialogAlertMsg';
 import ConfirmDialog from '../../components/dialogs/ConfirmDialog';
+import LoaderMask from '../../components/LoaderMask';
 
 import { ListActionItem } from '../../components/lists/ListText';
 import { BARCODES_STORAGE_KEY } from '../../core/consts';
@@ -57,7 +58,9 @@ const ScanScreen = () => {
     permissions && _restoreBarcodes();
   }, [ barcodesStorageKey, tryAsyncStorageValueByKey ]);
 
-  if (!permissions) return null;
+  if (!permissions) {
+    return <LoaderMask animating size={50} />;
+  }
 
   const handleBarcodePush = React.useCallback(async (barcode) => {
     const barcodesStorage = await restoreBarcodes() || [];

@@ -10,7 +10,7 @@ import Background from '../components/Background';
 import Logo from '../components/Logo';
 import Header from '../components/Header';
 import Button from '../components/buttons/Button';
-import TextInput from '../components/TextInput';
+import TextInput from '../components/inputs/TextInput';
 import FormInput from '../controllers/FormInput';
 import DialogAlertMsg from '../components/dialogs/DialogAlertMsg';
 
