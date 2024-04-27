@@ -1,7 +1,8 @@
 import React, { memo }  from 'react';
 import { Col } from "react-native-paper-grid";
 
-import TextInput from './TextInput';
+import MUITextFieldFocused from './MUITextFieldFocused';
+
 import { YesNoEnum } from '../../core/consts';
 
 
@@ -16,13 +17,9 @@ const formatValueToString = (value) => {
   return newValue.toUpperCase();
 };
 
-const GridField = ({ value, ...props }) => (
-  <Col>
-    <TextInput 
-      {...props}
-      value={formatValueToString(value)}
-      readOnly 
-    />
+const GridField = ({ value, label, ...props }) => (
+  <Col {...props}>
+    <MUITextFieldFocused value={formatValueToString(value)} label={label} />
   </Col>
 );
 

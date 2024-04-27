@@ -9,7 +9,7 @@ const MenuDrawerContent = (props) => {
   const [ activeScreen, setActiveScreen ] = React.useState('Profile');
 
   return (
-    <PaperDrawer.Section title="Menu">
+    <PaperDrawer.Section title="Menu" style={styles.menu}>
       <PaperDrawer.Item
         label='Profile'
         active={activeScreen === 'Profile'}
@@ -23,6 +23,7 @@ const MenuDrawerContent = (props) => {
         label='Tasks'
         icon='clipboard-list'
         active={activeScreen === 'Tasks'}
+        style={styles.menuItem}
         onPress={() => {
           setActiveScreen('Tasks');
           props.navigation.navigate('Tasks');
@@ -51,6 +52,14 @@ const AppMainSideMenuContent = (props) => (
 );
 
 const styles = StyleSheet.create({
+  menu: {
+    paddingTop: 10,
+    paddingBottom: 10,
+  },
+  menuItem: {
+    marginTop: 10,
+    marginBottom: 10,
+  },
   safeArea: { 
     top: 'always', 
     horizontal: 'never',

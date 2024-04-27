@@ -33,7 +33,7 @@ const formSchema = z.object({
 
 const ScanScreen = () => {
   const { getState } = useAuth();
-  const [ barcodes, setBarcodes ] = useState([]);
+  const [ barcodes, setBarcodes ] = useState(null);
   const [ selectedBarcode, setSelectedBarcode ] = useState(null);
   const [ error, setError ] = useState(null);
 
@@ -57,10 +57,6 @@ const ScanScreen = () => {
     };
     permissions && _restoreBarcodes();
   }, [ barcodesStorageKey, tryAsyncStorageValueByKey ]);
-
-  if (!permissions) {
-    return <LoaderMask animating size={50} />;
-  }
 
   const handleBarcodePush = React.useCallback(async (barcode) => {
     const barcodesStorage = await restoreBarcodes() || [];
@@ -102,6 +98,10 @@ const ScanScreen = () => {
       });
     };
   };
+
+  if (!permissions || barcodes == null) {
+    return <LoaderMask />;
+  }
 
   return (
     <Background>
@@ -232,6 +232,7 @@ const styles = StyleSheet.create({
     color: '#828085',
   },
   emptyText: {
+    textAlign: 'center',
     margin: 20,
     marginTop: 30,
     fontSize: 15,

@@ -34,8 +34,8 @@ const LocationScreen = () => {
     getCurrentPosition();
   }, []);
 
-  if (!position || !address) {
-    return <LoaderMask animating size={50} />;
+  if (!position || address == null) {
+    return <LoaderMask />;
   }
 
   return (

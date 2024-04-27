@@ -1,21 +1,53 @@
-import React, { memo } from 'react';
+import React, { memo, useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Avatar, List } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Header from '../components/Header';
 import Background from '../components/Background';
+import SwitchButton from '../components/buttons/SwitchButton';
+import LoaderMask from '../components/LoaderMask';
+
 import { ListItemText, ListAccordionText } from '../components/lists/ListText';
 
-import { useAuth } from '../contexts/auth';
+import { USER_SETTINGS_KEY } from '../core/consts';
 import { HumanRole } from '../core/consts';
+import { tryAsyncStorageValueByKey } from '../core/utils';
+import { useAuth } from '../contexts/auth';
 
+
+const makePersonalUserStorageKey = (permissions) => (
+  `${USER_SETTINGS_KEY}-user:${permissions?.id}`
+);
 
 const ProfileScreen = () => {
   const { getState } = useAuth();
-  const { permissions } = getState();
+  const [ userSettings, setUserSettings ] = useState({});
 
-  if (!permissions) return null;
+  const { permissions } = getState();
+  const userSettingsStorageKey = makePersonalUserStorageKey(permissions);
+
+  useEffect(() => {
+    const _restoreUserSettings = async () => {
+      const userSettingsStorage = await tryAsyncStorageValueByKey({ 
+        key: userSettingsStorageKey 
+      }) || {};
+      setUserSettings(userSettingsStorage);
+    };
+    permissions && _restoreUserSettings();
+  }, [ userSettingsStorageKey, tryAsyncStorageValueByKey ]);
+
+  if (!permissions) return <LoaderMask />;
+
+  const handleOnPushNotifyChange = async (isPushNotify) => {
+    const newUserSettings = { ...userSettings, is_push_notify: isPushNotify };
+    await tryAsyncStorageValueByKey({ 
+      key: userSettingsStorageKey, 
+      value: newUserSettings,
+      action: 'set', 
+    });
+    setUserSettings(newUserSettings);
+  };
 
   return (
     <Background>
@@ -44,7 +76,17 @@ const ProfileScreen = () => {
               <List.Section title='Settings'>
                 <List.AccordionGroup>
                   <ListAccordionText title='Notifications' icon='bell'>
-                    <ListItemText title='NOT IMPLEMENTED' />
+                    <ListItemText 
+                      title='Push notifications' 
+                      icon='message-badge-outline' 
+                      description={() => (
+                        <SwitchButton 
+                          initValue={!!userSettings?.is_push_notify} 
+                          label={(value) => value ? 'Enabled' : 'Disabled'}
+                          onValueChange={handleOnPushNotifyChange} 
+                        />
+                      )}
+                    />
                   </ListAccordionText>
                   <ListAccordionText title='Settings' icon='cog'>
                     <ListItemText title='NOT IMPLEMENTED' />

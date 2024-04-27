@@ -1,14 +1,17 @@
 import * as React from 'react';
 import { View, StyleSheet} from 'react-native';
-import { ActivityIndicator } from 'react-native-paper';
+import { ActivityIndicator, Text } from 'react-native-paper';
 
 
-const LoaderMask = (props) => (
+const LoaderMask = ({ children, ...props }) => (
   <View style={styles.container}>
-    <ActivityIndicator {...props} />
+    {children ? (
+      children
+    ) : (
+      <ActivityIndicator animating size={50} {...props} />
+    )}
   </View>
 );
-
 
 const styles = StyleSheet.create({
   container: {

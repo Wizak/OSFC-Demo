@@ -66,7 +66,7 @@ const AuthContextProvider = ({ children }) => {
     signOut: async () => {
       dispatch({ type: 'LOADING' });
       await SecureStore.deleteItemAsync('token');
-      await AsyncStorage.getItem('permissions');
+      await AsyncStorage.removeItem('permissions');
       dispatch({ type: 'SIGN_OUT' });
     },
     getState: () => state,
