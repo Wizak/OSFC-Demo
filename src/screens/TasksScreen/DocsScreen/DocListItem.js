@@ -48,7 +48,6 @@ const DocItem = ({ docData, setError }) => {
 
 const styles = StyleSheet.create({
   listItem: {
-    width: '90%',
     borderRadius: 20,
     backgroundColor: '#F5FBFF',
     margin: 10,

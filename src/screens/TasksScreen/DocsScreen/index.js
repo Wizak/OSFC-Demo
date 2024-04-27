@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState } from 'react';
-import { ScrollView, View, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { List, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -13,56 +13,77 @@ import { httpClient } from '../../../core/httpClient';
 import { USER_SETTINGS_KEY } from '../../../core/consts';
 import { tryAsyncStorageValueByKey } from '../../../core/utils';
 import { useAuth } from '../../../contexts/auth';
+import { useResponsibleViewStyle } from '../../../hooks/useResponsibleViewStyle';
 
+
+// const HARDCODE_TASK_ID = 56229;
 
 const getTaskIdStorage = async (userId) => {
   const userSettingsStorageKey = `${USER_SETTINGS_KEY}-user:${userId}`;
   const userSettingsStorage = await tryAsyncStorageValueByKey({ 
     key: userSettingsStorageKey 
   }) || {};
-  return userSettingsStorage?.taskId;
+
+  return userSettingsStorage.current_task_id;
 };
 
 const DocsScreen = () => {
-  const { getState } = useAuth();
   const [ data, setData ] = useState(null);
-  const { permissions } = getState();
   const [ error, setError ] = useState(null);
+
+  const { dynamicStyles, onViewLayout } = useResponsibleViewStyle({ 
+    minHeight: 400, aroundSpaceHeight: 220 });
+  const { getState } = useAuth();
+
+  const { permissions } = getState();
 
   useEffect(() => {
     const fetchTaskDocs = async () => {
       const taskIdStorage = await getTaskIdStorage(permissions.id);
-      const uri = `/orders/56229/documents`;
-      const docs = await httpClient(uri).then(res => res.json);
-      setData(docs);
+      const uri = `/orders/${taskIdStorage}/documents`;
+
+      await httpClient(uri).then(res => {
+        setData(res.json);
+      }).catch(e => {
+        setError({ 
+          title: 'Documents fetch Error', 
+          message: e.message,
+        });
+      });
     };
     permissions && fetchTaskDocs();
   }, []);
 
-  if (!permissions || data == null) return <LoaderMask />;
+  if (!permissions || data == null || dynamicStyles == null) {
+    return <LoaderMask />;
+  }
 
   return (
     <Background>
-      <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.container}>
+      <SafeAreaView edges={[ 'bottom', 'left', 'right' ]} style={{ flex: 1 }}>
+        <ScrollView>
           <List.Section 
-            title='Documents List' 
+            title='Documents' 
             titleStyle={styles.docsTitle}
-            style={styles.listViewContainer}
+            style={[ styles.listViewContainer, dynamicStyles ]}
+            onLayout={onViewLayout}
           >
-            {data.length !== 0 ? data.map((docData, index) => (
-              <React.Fragment key={`${docData.id}-${index}`}>
-                <Divider />
-                <DocItem docData={docData} setError={setError} />
-              </React.Fragment>
-            )): (
-              <React.Fragment>
-                <Divider />
-                <Text style={styles.emptyText}>EMPTY</Text>
-              </React.Fragment>
-            )}
+            <SafeAreaView edges={[ 'bottom', 'left', 'right' ]} style={{ flex: 1 }}>
+              <ScrollView nestedScrollEnabled={true}>
+                {data.length !== 0 ? data.map((docData, index) => (
+                  <React.Fragment key={`${docData.id}-${index}`}>
+                    <Divider />
+                    <DocItem docData={docData} setError={setError} />
+                  </React.Fragment>
+                )): (
+                  <React.Fragment>
+                    <Divider />
+                    <Text style={styles.emptyText}>EMPTY</Text>
+                  </React.Fragment>
+                )}
+              </ScrollView>
+            </SafeAreaView>
           </List.Section>
-
           <DialogAlertMsg 
             title={error?.title} 
             message={error?.message} 
@@ -76,15 +97,11 @@ const DocsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    margin: 20,
-    marginTop: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   listViewContainer: {
     backgroundColor: 'white',
-    width: '100%',
+    margin: '10%',
+    marginBottom: 20,
+    marginTop: 20,
     elevation: 1,
     flex: 1,
   },

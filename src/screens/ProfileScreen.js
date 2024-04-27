@@ -1,12 +1,14 @@
-import React, { memo, useState, useEffect, useCallback } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Avatar, List } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { z } from 'zod';
 
 import Header from '../components/Header';
 import Background from '../components/Background';
 import SwitchButton from '../components/buttons/SwitchButton';
 import LoaderMask from '../components/LoaderMask';
+import SimpleDialogForm from '../components/dialogs/SimpleDialogForm';
 
 import { ListItemText, ListAccordionText } from '../components/lists/ListText';
 
@@ -16,6 +18,12 @@ import { tryAsyncStorageValueByKey } from '../core/utils';
 import { useAuth } from '../contexts/auth';
 
 
+const setTaskIdFormSchema = z.object({
+  hardcoded_task_id: z.string().min(1, "Required")
+    .max(10, "Task ID must be no more than 10 characters"),
+});
+
+
 const makePersonalUserStorageKey = (permissions) => (
   `${USER_SETTINGS_KEY}-user:${permissions?.id}`
 );
@@ -23,6 +31,7 @@ const makePersonalUserStorageKey = (permissions) => (
 const ProfileScreen = () => {
   const { getState } = useAuth();
   const [ userSettings, setUserSettings ] = useState({});
+  const [ isTaskFormVisible, setIsTaskFormVisible ] = useState(false);
 
   const { permissions } = getState();
   const userSettingsStorageKey = makePersonalUserStorageKey(permissions);
@@ -49,52 +58,100 @@ const ProfileScreen = () => {
     setUserSettings(newUserSettings);
   };
 
+  const handleOnSetTaskId = async (isSetTaskId) => {
+    if (!isSetTaskId) {
+      const { hardcoded_task_id, ...newUserSettings } = userSettings;
+      await tryAsyncStorageValueByKey({ 
+        key: userSettingsStorageKey, 
+        value: newUserSettings,
+        action: 'set', 
+      });
+      setUserSettings(newUserSettings);
+    } else {
+      setIsTaskFormVisible(true);
+    };
+  };
+
+  const onApplyHardcodedTaskId = async ({ hardcoded_task_id}) => {
+    const newUserSettings = { ...userSettings, hardcoded_task_id };
+    await tryAsyncStorageValueByKey({ 
+      key: userSettingsStorageKey, 
+      value: newUserSettings,
+      action: 'set', 
+    });
+    setUserSettings(newUserSettings);
+    setIsTaskFormVisible(false);
+  };
+
   return (
     <Background>
-      <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView>
-          <View style={styles.container}>
-            <View style={styles.viewAvatar}>
-              <Avatar.Image size={150} source={require('../assets/profile-default.png')} />
-            </View>
-            <Header>{permissions.fullName}</Header>
-            <View style={styles.accordions}>
-              <List.Section title='Details'>
-                <List.AccordionGroup>
-                  <ListAccordionText title='General' icon='card-account-details'>
-                      <ListItemText title='E-mail' description={permissions.email} icon='email-outline' />
-                      <ListItemText title='Full Name' description={permissions.fullName} icon='account-box-outline' />
-                      <ListItemText title='Role' description={HumanRole[permissions.role]} icon='briefcase-outline' />
-                  </ListAccordionText>
-                  <ListAccordionText title='Other' icon='text-account'>
-                      <ListItemText title='ID' description={permissions.id} icon='identifier' />
-                      <ListItemText title='Local' description={permissions.locale} icon='translate' />
-                      <ListItemText title='Time Refresh' description={permissions.time_refresh_order} icon='timer-cog-outline' />
-                  </ListAccordionText>
-                </List.AccordionGroup>
-              </List.Section>
-              <List.Section title='Settings'>
-                <List.AccordionGroup>
-                  <ListAccordionText title='Notifications' icon='bell'>
-                    <ListItemText 
-                      title='Push notifications' 
-                      icon='message-badge-outline' 
+      <SafeAreaView edges={[ 'bottom', 'left', 'right' ]} style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={styles.container}>
+          <View style={styles.viewAvatar}>
+            <Avatar.Image size={150} source={require('../assets/profile-default.png')} />
+          </View>
+          <Header>{permissions.fullName}</Header>
+          <View style={styles.accordions}>
+            <List.Section title='Details'>
+              <List.AccordionGroup>
+                <ListAccordionText title='General' icon='card-account-details'>
+                    <ListItemText title='E-mail' description={permissions.email} icon='email-outline' />
+                    <ListItemText title='Full Name' description={permissions.fullName} icon='account-box-outline' />
+                    <ListItemText title='Role' description={HumanRole[permissions.role]} icon='briefcase-outline' />
+                </ListAccordionText>
+                <ListAccordionText title='Other' icon='text-account'>
+                    <ListItemText title='ID' description={permissions.id} icon='identifier' />
+                    <ListItemText title='Locale' description={permissions.locale} icon='translate' />
+                    <ListItemText title='Time Refresh' description={permissions.time_refresh_order} icon='timer-cog-outline' />
+                </ListAccordionText>
+              </List.AccordionGroup>
+            </List.Section>
+            <List.Section title='Settings'>
+              <List.AccordionGroup>
+                <ListAccordionText title='Notifications' icon='bell'>
+                  <ListItemText 
+                    title='Push notifications' 
+                    icon='message-badge-outline' 
+                    description={() => (
+                      <SwitchButton 
+                        initValue={!!userSettings?.is_push_notify} 
+                        label={(value) => value ? 'Enabled' : 'Disabled'}
+                        onValueChange={handleOnPushNotifyChange} 
+                      />
+                    )}
+                  />
+                </ListAccordionText>
+                <ListAccordionText title='Settings' icon='cog'>
+                  <ListItemText 
+                      title='Hardcoded Task ID' 
+                      icon='id-card' 
                       description={() => (
                         <SwitchButton 
-                          initValue={!!userSettings?.is_push_notify} 
-                          label={(value) => value ? 'Enabled' : 'Disabled'}
-                          onValueChange={handleOnPushNotifyChange} 
+                          initValue={!!userSettings?.hardcoded_task_id} 
+                          label={(value) => (
+                            value ? `Enabled (${userSettings?.hardcoded_task_id})` : 'Disabled'
+                          )}
+                          onValueChange={handleOnSetTaskId} 
                         />
                       )}
                     />
-                  </ListAccordionText>
-                  <ListAccordionText title='Settings' icon='cog'>
-                    <ListItemText title='NOT IMPLEMENTED' />
-                  </ListAccordionText>
-                </List.AccordionGroup>
-              </List.Section>
-            </View>
+                </ListAccordionText>
+              </List.AccordionGroup>
+            </List.Section>
           </View>
+          <SimpleDialogForm 
+            submitText='Apply'
+            title='Set Task ID'
+            inputProps={{
+              name: 'hardcoded_task_id',
+              inputMode: 'numeric',
+            }}
+            isVisible={isTaskFormVisible}
+            formSchema={setTaskIdFormSchema}
+            onSubmit={onApplyHardcodedTaskId}
+            onCancel={() => setIsTaskFormVisible(false)}
+            onDismiss={() => setIsTaskFormVisible(false)}
+          />
         </ScrollView>
       </SafeAreaView>
     </Background>
@@ -109,7 +166,6 @@ const styles = StyleSheet.create({
   }, 
   container: {
     padding: 20,
-    paddingTop: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },

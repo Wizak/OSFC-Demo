@@ -1,17 +1,23 @@
 import React, { memo, useState, useEffect }  from 'react';
 import * as Location from 'expo-location';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, ScrollView, Text, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { Card, Paragraph, Caption, Headline } from 'react-native-paper';
 
 import LoaderMask from '../../components/LoaderMask';
 import Background from '../../components/Background';
 
+import { useResponsibleViewStyle } from '../../hooks/useResponsibleViewStyle';
+
 
 const LocationScreen = () => {
   const [ position, setPosition ] = useState(null);
   const [ address, setAdress ] = useState(null);
+
+  const { dynamicStyles, onViewLayout } = useResponsibleViewStyle({ 
+    minHeight: 300, aroundSpaceHeight: 370, 
+  });
 
   useEffect(() => {
     const getCurrentPosition = async () => {
@@ -34,13 +40,13 @@ const LocationScreen = () => {
     getCurrentPosition();
   }, []);
 
-  if (!position || address == null) {
+  if (!position || address == null || dynamicStyles == null) {
     return <LoaderMask />;
   }
 
   return (
     <Background>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView edges={[ 'bottom', 'left', 'right' ]} style={{ flex: 1 }}>
         <ScrollView>
           <Card style={styles.card}>
             <View style={styles.cardTitle}>
@@ -61,16 +67,19 @@ const LocationScreen = () => {
             </Card.Content>
           </Card>
 
-          <View style={styles.mapView}>
+          <View 
+            style={[ styles.mapView, dynamicStyles ]}
+            onLayout={onViewLayout}
+          >
             <MapView
               style={styles.map}
-              initialRegion={position}
+              region={position}
               showsUserLocation={true}
               showsMyLocationButton={true}
               followsUserLocation={true}
               showsCompass={true}
               scrollEnabled={true}
-              zoomEnabled={true}
+              // zoomEnabled={true}
               pitchEnabled={true}
               rotateEnabled={true}
             >
@@ -108,7 +117,6 @@ const styles = StyleSheet.create({
   mapView: {
     margin: 20,
     marginTop: 0,
-    height: 450,
     alignItems: 'center',
     justifyContent: 'center',
   },

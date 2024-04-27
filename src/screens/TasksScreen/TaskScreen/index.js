@@ -3,6 +3,7 @@ import Swiper from 'react-native-swiper';
 
 import Background from '../../../components/Background';
 import LoaderMask from '../../../components/LoaderMask';
+import DialogAlertMsg from '../../../components/dialogs/DialogAlertMsg';
 
 import { httpClient } from '../../../core/httpClient';
 import { generateRandomNumber, makeQueryString } from '../../../core/utils';
@@ -16,12 +17,24 @@ import {
 } from './TaskSections';
 
 
-const setTaskIdStorage = async (userId, taskId) => {
-  const userSettingsStorageKey = `${USER_SETTINGS_KEY}-user:${userId}`;
+const getUserSettingsStorageKey = (userId) => (
+  `${USER_SETTINGS_KEY}-user:${userId}`
+);
+
+const getHardcodedTaskIdStorage = async (userId) => {
+  const userSettingsStorageKey = getUserSettingsStorageKey(userId);
   const userSettingsStorage = await tryAsyncStorageValueByKey({ 
     key: userSettingsStorageKey 
   }) || {};
-  const newUserSettings = { ...userSettingsStorage, taskId };
+  return userSettingsStorage?.hardcoded_task_id;
+};
+
+const setTaskIdStorage = async (userId, taskId) => {
+  const userSettingsStorageKey = getUserSettingsStorageKey(userId);
+  const userSettingsStorage = await tryAsyncStorageValueByKey({ 
+    key: userSettingsStorageKey 
+  }) || {};
+  const newUserSettings = { ...userSettingsStorage, current_task_id: taskId };
   await tryAsyncStorageValueByKey({ 
     key: userSettingsStorageKey, 
     value: newUserSettings,
@@ -30,11 +43,11 @@ const setTaskIdStorage = async (userId, taskId) => {
 };
 
 const TaskScreen = () => {
-  const { getState } = useAuth();
   const [ data, setData ] = useState([]);
+  const [ error, setError ] = useState(null);
+  const { getState } = useAuth();
 
   const { permissions } = getState();
-
   const requestData = {
     filter: {
       "eta_date|etd_date": ["all"], 
@@ -44,21 +57,53 @@ const TaskScreen = () => {
     range: [0, 24],
   };
 
-  const queryString = makeQueryString(requestData);
-
   React.useEffect(() => {
-    const fetchTask = async () => {
-      const uri = `/orders?${queryString}`;
-      const tasks = await httpClient(uri).then(res => res.json);
-      const randomNumber = generateRandomNumber({ 
-        min: requestData.range[0], 
-        max: requestData.range[1],
-      });
-      const randomTask = tasks[randomNumber];
-      setData(randomTask);
-      setTaskIdStorage(permissions.id, randomTask.id);
+    const fetchTask = async (queryString) => {
+      await httpClient(`/orders?${queryString}`)
+        .then((res) => {
+          const randomNumber = generateRandomNumber({ 
+            min: requestData.range[0], max: requestData.range[1]});
+          const randomTask = res.json[randomNumber];
+          setData(randomTask);
+          setTaskIdStorage(permissions.id, randomTask.id);
+        }).catch(e => {
+          setError({
+            title: 'Task fetching Error',
+            message: e.message,
+          });
+        });
     };
-    permissions && fetchTask();
+
+    const fetchHardcodedTask = async (queryString) => {
+      await httpClient(`/orders?${queryString}`)
+        .then((res) => {
+          const hardcodedTask = res.json[0];
+          setData(res.json[0]);
+          setTaskIdStorage(permissions.id, hardcodedTask.id);
+        }).catch(e => {
+          setError({
+            title: 'Hardcoded Task fetching Error',
+            message: e.message,
+          });
+        });
+    };
+
+    const fetchConditionally = async () => {
+      const hardcodedTaskId = await getHardcodedTaskIdStorage(permissions.id);
+      if (hardcodedTaskId !== undefined) {
+        const queryString = makeQueryString({
+          filter: {
+            ...requestData.filter,
+            id: hardcodedTaskId,
+          }
+        });
+        fetchHardcodedTask(queryString);
+      } else {
+        const queryString = makeQueryString(requestData);
+        fetchTask(queryString);
+      };
+    };
+    permissions && fetchConditionally();
   }, []);
 
   if (!permissions || data.length === 0) {
@@ -74,6 +119,12 @@ const TaskScreen = () => {
         <SplitPlumbSection testID='SplitPlumbSection' data={data} />
         <StorageOtherSection testID='StorageOtherSection' data={data} />
       </Swiper>
+      <DialogAlertMsg 
+        title={error?.title} 
+        message={error?.message} 
+        isVisible={!!error}
+        onClose={() => setError(null)}
+      />
     </Background>
   );
 };

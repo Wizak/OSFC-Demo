@@ -21,6 +21,7 @@ import { ListActionItem } from '../../components/lists/ListText';
 import { BARCODES_STORAGE_KEY } from '../../core/consts';
 import { tryAsyncStorageValueByKey } from '../../core/utils';
 import { useAuth } from '../../contexts/auth';
+import { useResponsibleViewStyle } from '../../hooks/useResponsibleViewStyle';
 
 
 const makePersonalUserStorageKey = (permissions) => (
@@ -32,14 +33,18 @@ const formSchema = z.object({
 });
 
 const ScanScreen = () => {
-  const { getState } = useAuth();
   const [ barcodes, setBarcodes ] = useState(null);
   const [ selectedBarcode, setSelectedBarcode ] = useState(null);
   const [ error, setError ] = useState(null);
 
+  const { getState } = useAuth();
   const { control, reset, handleSubmit } = useForm({
     resolver: zodResolver(formSchema),
   });
+  const { 
+    dynamicStyles, setDynamicStyles, 
+    onViewLayout, setViewDemensions, 
+  } = useResponsibleViewStyle({ minHeight: 400, aroundSpaceHeight: 400 });
 
   const { permissions } = getState();
   const barcodesStorageKey = makePersonalUserStorageKey(permissions);
@@ -68,6 +73,8 @@ const ScanScreen = () => {
       action: 'set', 
     });
     setBarcodes(newBarcodes);
+    setViewDemensions(null);
+    setDynamicStyles({ height: 1 });
   }, [ barcodesStorageKey, restoreBarcodes, tryAsyncStorageValueByKey ]);
 
   const onBarcodeDelete = useCallback(async () => {
@@ -83,6 +90,8 @@ const ScanScreen = () => {
         });
         setBarcodes(newBarcodesStorage);
         setSelectedBarcode(null);
+        setViewDemensions(null);
+        setDynamicStyles({ height: 1 });
       }
     }
   }, [ barcodesStorageKey, selectedBarcode, restoreBarcodes, tryAsyncStorageValueByKey ]);
@@ -99,13 +108,13 @@ const ScanScreen = () => {
     };
   };
 
-  if (!permissions || barcodes == null) {
+  if (!permissions || barcodes == null || dynamicStyles == null) {
     return <LoaderMask />;
   }
 
   return (
     <Background>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView edges={[ 'bottom', 'left', 'right' ]} style={{ flex: 1 }}>
         <ScrollView>
           <View style={styles.container}>
             <View style={styles.inputContainer}>
@@ -130,9 +139,10 @@ const ScanScreen = () => {
             <List.Section 
               title='Codes' 
               titleStyle={styles.codesTitle}
-              style={styles.listViewContainer}
+              style={[ styles.listViewContainer, dynamicStyles ]}
+              onLayout={onViewLayout}
             >
-              <SafeAreaView style={{ flex: 1 }}>
+              <SafeAreaView edges={[ 'bottom', 'left', 'right' ]} style={{ flex: 1 }}>
                 <ScrollView contentContainerStyle={styles.listSection} nestedScrollEnabled={true}>
                   {barcodes.length !== 0 ? barcodes.map((value, index) => (
                     <React.Fragment key={`${value}-${index}`}>
@@ -191,7 +201,6 @@ const styles = StyleSheet.create({
   },
   container: {
     margin: 20,
-    marginTop: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -209,10 +218,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     width: '100%',
     elevation: 1,
-    height: 500,
     flex: 1,
     paddingBottom: 20,
-
   },
   input: {
     width: '60%',

@@ -21,7 +21,7 @@ const Main = () => (
         <NavigationContainer>
           <App />
         </NavigationContainer>
-        <StatusBar translucent={true} hidden={false} />
+        <StatusBar hidden={false} />
       </SafeAreaProvider>
     </AuthContextProvider>
   </PaperProvider>
