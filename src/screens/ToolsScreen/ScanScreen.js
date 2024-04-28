@@ -29,7 +29,11 @@ const makePersonalUserStorageKey = (permissions) => (
 );
 
 const formSchema = z.object({
-  barcode: z.string().min(1, "Required"),
+  barcode: z.string()
+    .min(1, "Required")
+    .max(70, "Value must be no longer than 70 characters")
+    .transform((val) => val.trim())
+    .refine((val) => !!val.match(/^\d+$/)?.[0], {message: "Value must be a valid number"}),
 });
 
 const ScanScreen = () => {
@@ -127,13 +131,14 @@ const ScanScreen = () => {
                 autoCapitalize="none"
                 extraContainerStyle={styles.input}
               />
-              <Button 
-                mode="contained" 
-                onPress={handleSubmit(onPushBarcode)}
-                style={styles.pushButton}
-              >
-                <Text>PUSH</Text>
-              </Button>
+              <View style={styles.pushButton}>
+                <Button 
+                  mode="contained" 
+                  onPress={handleSubmit(onPushBarcode)}
+                >
+                  <Text>PUSH</Text>
+                </Button>
+              </View>
             </View>
 
             <List.Section 
@@ -225,10 +230,11 @@ const styles = StyleSheet.create({
     width: '60%',
   },
   pushButton: {
-    width: '30%',
     alignItems: 'center',
     justifyContent: 'center',
     color: 'white',
+    paddingTop: 10,
+    width: '30%',
   },
   codesTitle: {
     fontSize: 26,

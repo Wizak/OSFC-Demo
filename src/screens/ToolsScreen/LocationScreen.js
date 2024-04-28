@@ -2,14 +2,27 @@ import React, { memo, useState, useEffect }  from 'react';
 import * as Location from 'expo-location';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, ScrollView, StyleSheet } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE  } from 'react-native-maps';
 import { Card, Paragraph, Caption, Headline } from 'react-native-paper';
+import Toast from 'react-native-toast-message';
+import Constants from "expo-constants";
 
 import LoaderMask from '../../components/LoaderMask';
 import Background from '../../components/Background';
 
 import { useResponsibleViewStyle } from '../../hooks/useResponsibleViewStyle';
+import { ExecutionEnvironment } from '../../core/consts';
 
+
+const notifyThatMapsDoesNotWorkInProdMode = () => {
+  Toast.show({
+    type: 'error',
+    text1: 'Google Maps Warning ⚠️',
+    text2: 'Maps does not work in production build (need API key)',
+    visibilityTime: 7000,
+    topOffset: 100,
+  });
+};
 
 const LocationScreen = () => {
   const [ position, setPosition ] = useState(null);
@@ -38,6 +51,10 @@ const LocationScreen = () => {
       setAdress(currentAdress[0]);
     };
     getCurrentPosition();
+
+    if (Constants.executionEnvironment === ExecutionEnvironment.Standalone) {
+      notifyThatMapsDoesNotWorkInProdMode();
+    }
   }, []);
 
   if (!position || address == null || dynamicStyles == null) {
@@ -74,6 +91,7 @@ const LocationScreen = () => {
             <MapView
               style={styles.map}
               region={position}
+              provider={PROVIDER_GOOGLE}
               showsUserLocation={true}
               showsMyLocationButton={true}
               followsUserLocation={true}

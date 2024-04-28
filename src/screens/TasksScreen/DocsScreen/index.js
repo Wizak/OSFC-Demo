@@ -27,7 +27,6 @@ const DocsScreen = () => {
 
   const { permissions } = getState();
   const { apiUrl, currentTaskId } = getStoreState();
-  console.log("currentTaskId", currentTaskId);
 
   useEffect(() => {
     fetchTaskDocs();

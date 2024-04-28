@@ -1,12 +1,17 @@
 import React, { memo } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import { Drawer as PaperDrawer } from 'react-native-paper';
+import Constants from "expo-constants";
 
 import LogoutButton from '../buttons/LogoutButton';
+import { useStore } from '../../contexts/store';
 
 
 const MenuDrawerContent = (props) => {
   const [ activeScreen, setActiveScreen ] = React.useState('Profile');
+  const { getState } = useStore();
+
+  const { is_push_notify } = getState();
 
   return (
     <PaperDrawer.Section title="Menu" style={styles.menu}>
@@ -33,11 +38,23 @@ const MenuDrawerContent = (props) => {
         label='Tools'
         icon='tools'
         active={activeScreen === 'Tools'}
+        style={styles.menuItem}
         onPress={() => {
           setActiveScreen('Tools');
           props.navigation.navigate('Tools');
         }}
       />
+      {is_push_notify ? (
+        <PaperDrawer.Item
+          label="Experimental"
+          icon='star-circle-outline'
+          active={activeScreen === 'Experimental'}
+          onPress={() => {
+            setActiveScreen('Experimental');
+            props.navigation.navigate('Experimental');
+          }}
+        />
+      ): null}
     </PaperDrawer.Section>
   );
 };
@@ -53,9 +70,8 @@ const AppMainSideMenuContent = (props) => (
 
 const styles = StyleSheet.create({
   menu: {
-    paddingTop: 10,
     paddingBottom: 10,
-    marginTop: 20,
+    paddingTop: Constants.statusBarHeight
   },
   menuItem: {
     marginTop: 10,

@@ -28,10 +28,16 @@ const ApisServersList = [
   },
 ];
 
+const ExecutionEnvironment = { 
+  Bare: 'bare', 
+  Standalone: 'standalone', 
+  StoreClient: 'storeClient',
+};
+
 
 export { 
   GALLERY_STORAGE_KEY, BARCODES_STORAGE_KEY, 
   USER_SETTINGS_KEY, USER_STORE_KEY,
   AllowedRolesToUseApp, HumanRole, YesNoEnum,
-  PreviewOnlyExts, ApisServersList,
+  PreviewOnlyExts, ApisServersList, ExecutionEnvironment,
 };

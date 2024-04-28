@@ -28,7 +28,7 @@ const StoreProvider = ({ children }) => {
 
   const storeContextValue = {
     changeStore: async (payload) => {
-      await AsyncStorage.setItem(USER_STORE_KEY, JSON.stringify(payload));
+      await AsyncStorage.setItem(USER_STORE_KEY, JSON.stringify({ ...state, ...payload }));
       dispatch({ type: StoreActions.ChangeStore, payload });
     },
     resetStore: async () => {

@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import { Avatar, List } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
+import Toast from 'react-native-toast-message';
 
 import Header from '../components/Header';
 import Background from '../components/Background';
@@ -16,23 +17,37 @@ import { USER_SETTINGS_KEY } from '../core/consts';
 import { HumanRole } from '../core/consts';
 import { tryAsyncStorageValueByKey } from '../core/utils';
 import { useAuth } from '../contexts/auth';
+import { useStore } from '../contexts/store';
 
 
 const setTaskIdFormSchema = z.object({
-  hardcoded_task_id: z.string().min(1, "Required")
-    .max(10, "Task ID must be no more than 10 characters"),
+  hardcoded_task_id: z.string()
+    .min(1, "Required")
+    .max(10, "Value must be no longer than 10 characters")
+    .transform((val) => val.trim())
+    .refine((val) => !!val.match(/^\d+$/)?.[0], {message: "Value must be a valid number"}),
 });
-
 
 const makePersonalUserStorageKey = (permissions) => (
   `${USER_SETTINGS_KEY}-user:${permissions?.id}`
 );
 
+const showToastExperimentalFeatureEnabled = () => {
+  Toast.show({
+    type: 'success',
+    text1: 'Push Notifications are Enabled 🔔',
+    text2: 'Examine the sidebar menu',
+    topOffset: 100,
+  });
+};
+
 const ProfileScreen = () => {
-  const { getState } = useAuth();
   const [ userSettings, setUserSettings ] = useState({});
   const [ isTaskFormVisible, setIsTaskFormVisible ] = useState(false);
   const [ isHardcodedTaskId, setIsHardcodedTaskId ] = useState(false);
+
+  const { getState } = useAuth();
+  const { changeStore } = useStore();
 
   const { permissions } = getState();
   const userSettingsStorageKey = makePersonalUserStorageKey(permissions);
@@ -41,8 +56,9 @@ const ProfileScreen = () => {
     const _restoreUserSettings = async () => {
       const userSettingsStorage = await tryAsyncStorageValueByKey({ 
         key: userSettingsStorageKey 
-      }) || {};
+      }) || { };
       setUserSettings(userSettingsStorage);
+      changeStore({ is_push_notify: userSettingsStorage?.is_push_notify });
       setIsHardcodedTaskId(!!userSettingsStorage?.hardcoded_task_id);
     };
     permissions && _restoreUserSettings();
@@ -58,6 +74,8 @@ const ProfileScreen = () => {
       action: 'set', 
     });
     setUserSettings(newUserSettings);
+    changeStore({ is_push_notify: newUserSettings.is_push_notify });
+    isPushNotify && showToastExperimentalFeatureEnabled();
   };
 
   const handleOnSetTaskId = async (isSetTaskId) => {
@@ -122,7 +140,7 @@ const ProfileScreen = () => {
                     icon='message-badge-outline' 
                     description={() => (
                       <SwitchButton 
-                        initValue={!!userSettings?.is_push_notify} 
+                        value={!!userSettings?.is_push_notify} 
                         label={(value) => value ? 'Enabled' : 'Disabled'}
                         onValueChange={handleOnPushNotifyChange} 
                       />

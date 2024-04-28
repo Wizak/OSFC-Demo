@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, memo } from 'react'
-import { Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { Image, TouchableOpacity, TouchableWithoutFeedback, StyleSheet } from 'react-native';
 import * as ImagePicker from "expo-image-picker";
+import ImageView from "react-native-image-viewing";
 
 import Fab from '../../components/Fab';
 import FlatTiles from '../../components/lists/FlatTiles';
@@ -17,8 +18,8 @@ const makePersonalUserStorageKey = (permissions) => (
   `${GALLERY_STORAGE_KEY}-user:${permissions?.id}`
 );
 
-const ImageTile = ({ onPress, ...props }) => (
-  <TouchableOpacity onPress={() => onPress(props)}>
+const ImageTile = ({ onPress, onLongPress, ...props }) => (
+  <TouchableOpacity onPress={() => onPress(props)} onLongPress={() => onLongPress(props)}>
     <Image source={props.source} style={styles.imageTile} />
   </TouchableOpacity>
 );
@@ -29,6 +30,7 @@ const CameraScreen = () => {
   const [ isVisiblePickerModal, setIsVisiblePickerModal ] = useState(false);
   const [ error, setError ] = useState(null);
   const [ selectedFileUri, setSelectedFileUri ] = useState(null);
+  const [ selectedFileUriForPreview, setSelectedFileUriForPreview ] = useState([]);
 
   const { permissions } = getState();
   const galleryStorageKey = makePersonalUserStorageKey(permissions);
@@ -128,6 +130,9 @@ const CameraScreen = () => {
       <FlatTiles data={imagesTilesData}>
         <ImageTile 
           onPress={({ source }) => {
+            setSelectedFileUriForPreview([{ uri: source.uri }]);
+          }} 
+          onLongPress={({ source }) => {
             setSelectedFileUri(source.uri);
           }} 
         />
@@ -140,6 +145,12 @@ const CameraScreen = () => {
         onClose={() => setIsVisiblePickerModal(false)}
         onCameraPress={onCameraPress}
         onImageLibraryPress={onGalleryPress}
+      />
+      <ImageView
+        images={selectedFileUriForPreview}
+        imageIndex={0}
+        visible={!!selectedFileUriForPreview.length}
+        onRequestClose={() => setSelectedFileUriForPreview([])}
       />
 
       <DialogAlertMsg 

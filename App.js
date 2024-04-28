@@ -6,6 +6,7 @@ import { PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from "expo-status-bar";
+import Toast from 'react-native-toast-message';
 
 import { name as appName } from './app.json';
 import { theme } from './src/core/theme';
@@ -23,7 +24,8 @@ const Main = () => (
           <NavigationContainer>
             <App />
           </NavigationContainer>
-          <StatusBar hidden={false} />
+          <StatusBar hidden={false} style='dark' translucent={true} />
+          <Toast />
         </SafeAreaProvider>
       </AuthContextProvider>
     </StoreProvider>
