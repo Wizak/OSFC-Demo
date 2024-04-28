@@ -14,28 +14,32 @@ const ConfirmDialog = ({
   <View>
     <Portal>
       <Dialog visible={isVisible} onDismiss={onDecline}>
-        <View style={styles.content}>
-          {!!title ? (
-            <Dialog.Title>
-              {title}
-            </Dialog.Title>
-          ) : !!icon ? (
-            <Dialog.Icon icon="alert" />
-          ) : null}
-          <Dialog.Content>
-            <Text variant="bodyMedium">
-              {message}
-            </Text>
-          </Dialog.Content>
-        </View>
-        <Dialog.Actions>
-          <Button onPress={onConfirm}>
-            {confirmMessage}
-          </Button>
-          <Button onPress={onDecline}>
-            {declineMessage}
-          </Button>
-        </Dialog.Actions>
+        {isVisible ? (
+          <React.Fragment>
+            <View style={styles.content}>
+              {!!title ? (
+                <Dialog.Title>
+                  {title}
+                </Dialog.Title>
+              ) : !!icon ? (
+                <Dialog.Icon icon="alert" />
+              ) : null}
+              <Dialog.Content>
+                <Text variant="bodyMedium">
+                  {message}
+                </Text>
+              </Dialog.Content>
+            </View>
+            <Dialog.Actions>
+              <Button onPress={onConfirm}>
+                {confirmMessage}
+              </Button>
+              <Button onPress={onDecline}>
+                {declineMessage}
+              </Button>
+            </Dialog.Actions>
+          </React.Fragment>
+        ) : null}
       </Dialog>
     </Portal>
   </View>

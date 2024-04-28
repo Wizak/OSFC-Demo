@@ -1,6 +1,3 @@
-import { API_URL } from '../core/consts';
-
-
 class HttpError extends Error {
   constructor(message, status, body = null) {
     super(message);
@@ -36,10 +33,10 @@ const createHeadersFromOptions = (options) => {
   return requestHeaders;
 };
 
-const fetchJson = (url, options) => {
+const fetchJson = async (url, options) => {
   const requestHeaders = createHeadersFromOptions(options);
 
-  return fetch(API_URL + url, { ...options, headers: requestHeaders })
+  return await fetch(url, { ...options, headers: requestHeaders })
     .then(response =>
       response.text().then(text => ({
         status: response.status,

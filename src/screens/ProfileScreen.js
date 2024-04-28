@@ -32,6 +32,7 @@ const ProfileScreen = () => {
   const { getState } = useAuth();
   const [ userSettings, setUserSettings ] = useState({});
   const [ isTaskFormVisible, setIsTaskFormVisible ] = useState(false);
+  const [ isHardcodedTaskId, setIsHardcodedTaskId ] = useState(false);
 
   const { permissions } = getState();
   const userSettingsStorageKey = makePersonalUserStorageKey(permissions);
@@ -42,6 +43,7 @@ const ProfileScreen = () => {
         key: userSettingsStorageKey 
       }) || {};
       setUserSettings(userSettingsStorage);
+      setIsHardcodedTaskId(!!userSettingsStorage?.hardcoded_task_id);
     };
     permissions && _restoreUserSettings();
   }, [ userSettingsStorageKey, tryAsyncStorageValueByKey ]);
@@ -67,6 +69,7 @@ const ProfileScreen = () => {
         action: 'set', 
       });
       setUserSettings(newUserSettings);
+      setIsHardcodedTaskId(false);
     } else {
       setIsTaskFormVisible(true);
     };
@@ -80,6 +83,11 @@ const ProfileScreen = () => {
       action: 'set', 
     });
     setUserSettings(newUserSettings);
+    setIsTaskFormVisible(false);
+    setIsHardcodedTaskId(true);
+  };
+
+  const onDismissHardcodedTaskId = () => {
     setIsTaskFormVisible(false);
   };
 
@@ -127,9 +135,9 @@ const ProfileScreen = () => {
                       icon='id-card' 
                       description={() => (
                         <SwitchButton 
-                          initValue={!!userSettings?.hardcoded_task_id} 
+                          value={isHardcodedTaskId} 
                           label={(value) => (
-                            value ? `Enabled (${userSettings?.hardcoded_task_id})` : 'Disabled'
+                            value ? `Enabled (ID:${userSettings?.hardcoded_task_id})` : 'Disabled'
                           )}
                           onValueChange={handleOnSetTaskId} 
                         />
@@ -149,8 +157,8 @@ const ProfileScreen = () => {
             isVisible={isTaskFormVisible}
             formSchema={setTaskIdFormSchema}
             onSubmit={onApplyHardcodedTaskId}
-            onCancel={() => setIsTaskFormVisible(false)}
-            onDismiss={() => setIsTaskFormVisible(false)}
+            onCancel={onDismissHardcodedTaskId}
+            onDismiss={onDismissHardcodedTaskId}
           />
         </ScrollView>
       </SafeAreaView>

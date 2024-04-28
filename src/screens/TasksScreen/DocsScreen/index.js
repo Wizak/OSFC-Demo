@@ -1,5 +1,5 @@
-import React, { memo, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import React, { memo, useEffect, useState, useCallback } from 'react';
+import { ScrollView, RefreshControl, StyleSheet } from 'react-native';
 import { List, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -10,58 +10,70 @@ import DialogAlertMsg from '../../../components/dialogs/DialogAlertMsg';
 import DocItem from './DocListItem';
 
 import { httpClient } from '../../../core/httpClient';
-import { USER_SETTINGS_KEY } from '../../../core/consts';
-import { tryAsyncStorageValueByKey } from '../../../core/utils';
 import { useAuth } from '../../../contexts/auth';
+import { useStore } from '../../../contexts/store';
 import { useResponsibleViewStyle } from '../../../hooks/useResponsibleViewStyle';
 
-
-// const HARDCODE_TASK_ID = 56229;
-
-const getTaskIdStorage = async (userId) => {
-  const userSettingsStorageKey = `${USER_SETTINGS_KEY}-user:${userId}`;
-  const userSettingsStorage = await tryAsyncStorageValueByKey({ 
-    key: userSettingsStorageKey 
-  }) || {};
-
-  return userSettingsStorage.current_task_id;
-};
 
 const DocsScreen = () => {
   const [ data, setData ] = useState(null);
   const [ error, setError ] = useState(null);
+  const [ refreshing, setRefreshing ] = React.useState(false);
 
   const { dynamicStyles, onViewLayout } = useResponsibleViewStyle({ 
     minHeight: 400, aroundSpaceHeight: 220 });
   const { getState } = useAuth();
+  const { getState: getStoreState } = useStore();
 
   const { permissions } = getState();
+  const { apiUrl, currentTaskId } = getStoreState();
+  console.log("currentTaskId", currentTaskId);
 
   useEffect(() => {
-    const fetchTaskDocs = async () => {
-      const taskIdStorage = await getTaskIdStorage(permissions.id);
-      const uri = `/orders/${taskIdStorage}/documents`;
+    fetchTaskDocs();
+  }, [ currentTaskId, fetchTaskDocs ]);
 
-      await httpClient(uri).then(res => {
-        setData(res.json);
-      }).catch(e => {
-        setError({ 
-          title: 'Documents fetch Error', 
-          message: e.message,
-        });
+  const fetchTaskDocs = useCallback(async () => {
+    const uri = `${apiUrl}/orders/${currentTaskId}/documents`;
+    await httpClient(uri).then(res => {
+      setData(res.json);
+    }).catch(e => {
+      setError({ 
+        title: 'Documents fetch Error', 
+        message: e.message,
       });
-    };
-    permissions && fetchTaskDocs();
-  }, []);
+    });
+  }, [ apiUrl, currentTaskId, httpClient ]);
 
-  if (!permissions || data == null || dynamicStyles == null) {
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchTaskDocs();
+    setRefreshing(false);
+  }, [ currentTaskId, fetchTaskDocs ]);
+
+  if (error) {
+    return (
+      <Background>
+        <DialogAlertMsg 
+          title={error?.title} 
+          message={error?.message} 
+          isVisible={!!error}
+          onClose={() => setError(null)}
+        />
+      </Background>
+    );
+  }
+
+  if (!permissions || refreshing || data === null || dynamicStyles == null) {
     return <LoaderMask />;
   }
 
   return (
     <Background>
       <SafeAreaView edges={[ 'bottom', 'left', 'right' ]} style={{ flex: 1 }}>
-        <ScrollView>
+        <ScrollView refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
           <List.Section 
             title='Documents' 
             titleStyle={styles.docsTitle}

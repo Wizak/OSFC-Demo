@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { AuthReducer } from '../reducers/auth';
+import { AuthReducer, AuthActions } from '../reducers/auth';
 import { httpClient } from '../core/httpClient';
 import { AllowedRolesToUseApp } from '../core/consts';
 
@@ -29,22 +29,22 @@ const AuthContextProvider = ({ children }) => {
         error = 'Restore permissions Erorr';
       }
 
-      dispatch({ type: 'RESTORE_PERMISSIONS', permissions, error });
+      dispatch({ type: AuthActions.RestorePermissions, permissions, error });
     };
 
     bootstrapAsync();
   }, []);
 
   const authContextValue = {
-    signIn: async (data) => {
+    signIn: async ({ apiUrl, ...body }) => {
       let permissions;
       let error;
 
-      dispatch({ type: 'LOADING' });
+      dispatch({ type: AuthActions.Loading });
 
-      await httpClient('/login', {
+      await httpClient(`${apiUrl}/login`, {
         method: 'POST',
-        body: JSON.stringify(data),
+        body: JSON.stringify(body),
       }).then(async ({ json }) => {
         if (!AllowedRolesToUseApp.includes(json.permissions.role)) {
           error = 'Only OSFC is allowed to login'
@@ -60,14 +60,14 @@ const AuthContextProvider = ({ children }) => {
       }).catch(e => {
         error = e?.message;
       }).finally(() => {
-        dispatch({ type: 'SIGN_IN', permissions, error });
+        dispatch({ type: AuthActions.SignIn, permissions, error });
       });
     },
     signOut: async () => {
-      dispatch({ type: 'LOADING' });
+      dispatch({ type: AuthActions.Loading });
       await SecureStore.deleteItemAsync('token');
       await AsyncStorage.removeItem('permissions');
-      dispatch({ type: 'SIGN_OUT' });
+      dispatch({ type: AuthActions.SignOut });
     },
     getState: () => state,
     checkAuth: () => !!SecureStore.getItem('token'),

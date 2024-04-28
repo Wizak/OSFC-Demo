@@ -26,33 +26,37 @@ const SimpleDialogForm = ({
     <View>
       <Portal>
         <Dialog visible={isVisible} onDismiss={onDismiss}>
-          <View>
-            {!!title ? (
-              <Dialog.Title>
-                {title}
-              </Dialog.Title>
-            ) : null}
-            <Dialog.Content>
-              <FormInput
-                {...inputProps}
-                control={control}
-                component={TextInput}
-              />
-            </Dialog.Content>
-          </View>
-          <Dialog.Actions>
-            <Button 
-              withStyles={false}
-              mode="contained" 
-              labelStyle={styles.submitButtonLabel}
-              onPress={handleSubmit(onSubmit)}
-            >
-              {submitText}
-            </Button>
-            <Button onPress={onCancel}>
-              {cancelText}
-            </Button>
-          </Dialog.Actions>
+          {isVisible ? (
+            <React.Fragment>
+              <View>
+                {!!title ? (
+                  <Dialog.Title>
+                    {title}
+                  </Dialog.Title>
+                ) : null}
+                <Dialog.Content>
+                  <FormInput
+                    {...inputProps}
+                    control={control}
+                    component={TextInput}
+                  />
+                </Dialog.Content>
+              </View>
+              <Dialog.Actions>
+                <Button 
+                  withStyles={false}
+                  mode="contained" 
+                  labelStyle={styles.submitButtonLabel}
+                  onPress={handleSubmit(onSubmit)}
+                >
+                  {submitText}
+                </Button>
+                <Button onPress={onCancel}>
+                  {cancelText}
+                </Button>
+              </Dialog.Actions>
+            </React.Fragment>
+          ) : null}
         </Dialog>
       </Portal>
     </View>

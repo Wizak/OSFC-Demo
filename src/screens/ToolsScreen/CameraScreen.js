@@ -49,7 +49,7 @@ const CameraScreen = () => {
 
   if (!permissions) return null;
 
-  const handleImageUploading = React.useCallback(async (hardwareApiResp) => {
+  const handleImageUploading = useCallback(async (hardwareApiResp) => {
     if (!hardwareApiResp.canceled) {
       const { uri } = hardwareApiResp.assets[0];
       const fileStorageUris = await restoreFileUris() || [];

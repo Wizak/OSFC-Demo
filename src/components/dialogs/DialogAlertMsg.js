@@ -12,25 +12,29 @@ const DialogAlertMsg = ({
   <View>
     <Portal>
       <Dialog visible={isVisible} onDismiss={onClose}>
-        <View style={styles.content}>
-          {!!title ? (
-            <Dialog.Title>
-              {title}
-            </Dialog.Title>
-          ) : !!icon ? (
-            <Dialog.Icon icon="alert" />
-          ) : null}
-          <Dialog.Content>
-            <Text variant="bodyMedium">
-              {message}
-            </Text>
-          </Dialog.Content>
-        </View>
-        <Dialog.Actions>
-          <Button onPress={onClose}>
-            {closeText}
-          </Button>
-        </Dialog.Actions>
+        {isVisible ? (
+          <React.Fragment>
+            <View style={styles.content}>
+              {!!title ? (
+                <Dialog.Title>
+                  {title}
+                </Dialog.Title>
+              ) : !!icon ? (
+                <Dialog.Icon icon="alert" />
+              ) : null}
+              <Dialog.Content>
+                <Text variant="bodyMedium">
+                  {message}
+                </Text>
+              </Dialog.Content>
+            </View>
+            <Dialog.Actions>
+              <Button onPress={onClose}>
+                {closeText}
+              </Button>
+            </Dialog.Actions>
+          </React.Fragment>
+        ) : null}
       </Dialog>
     </Portal>
   </View>

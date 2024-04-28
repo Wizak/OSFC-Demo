@@ -13,7 +13,7 @@ const getOptions = async (options = {}) => {
 
 const httpClient = async (url, options = {}) => {
 	const _options = await getOptions(options);
-	return fetchJson(url, _options);
+	return await fetchJson(url, _options);
 };
 
 const httpClientRaw = (url, options = {}) => {

@@ -41,10 +41,7 @@ const saveFileByUri = async ({ uri, filename, mimetype, handleError }) => {
   }
 };
 
-const downloadAndGetUriOfRemoteFile = async ({ 
-  filename, handleError,
-  apiEndpoint = API_URL, 
-}) => {
+const downloadAndGetUriOfRemoteFile = async ({ filename, handleError, apiEndpoint }) => {
   if (!filename) return;
   const remotePath = `${apiEndpoint}/${filename}`;
   const localPath = `${FileSystem.documentDirectory}${filename}`;

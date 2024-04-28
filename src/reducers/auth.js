@@ -37,4 +37,4 @@ const AuthReducer = (prevState, action) => {
 };
 
 
-export { AuthReducer };
+export { AuthReducer, AuthActions };

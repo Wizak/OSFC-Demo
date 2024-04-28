@@ -11,19 +11,22 @@ import { name as appName } from './app.json';
 import { theme } from './src/core/theme';
 
 import AuthContextProvider from './src/contexts/auth';
+import StoreProvider from './src/contexts/store';
 import App from './src';
 
 
 const Main = () => (
   <PaperProvider theme={theme}>
-    <AuthContextProvider>
-      <SafeAreaProvider>
-        <NavigationContainer>
-          <App />
-        </NavigationContainer>
-        <StatusBar hidden={false} />
-      </SafeAreaProvider>
-    </AuthContextProvider>
+    <StoreProvider>
+      <AuthContextProvider>
+        <SafeAreaProvider>
+          <NavigationContainer>
+            <App />
+          </NavigationContainer>
+          <StatusBar hidden={false} />
+        </SafeAreaProvider>
+      </AuthContextProvider>
+    </StoreProvider>
   </PaperProvider>
 );
 
