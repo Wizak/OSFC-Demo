@@ -2,6 +2,7 @@ const GALLERY_STORAGE_KEY = process.env.EXPO_PUBLIC_GALLERY_STORAGE_KEY;
 const BARCODES_STORAGE_KEY = process.env.EXPO_PUBLIC_BARCODES_STORAGE_KEY;
 const USER_SETTINGS_KEY = process.env.EXPO_PUBLIC_USER_SETTINGS_KEY;
 const USER_STORE_KEY = process.env.EXPO_PUBLIC_USER_STORE_KEY;
+const DEAFAULT_PUSH_NOTIFY_SERVER = process.env.EXPO_PUBLIC_DEAFAULT_PUSH_NOTIFY_SERVER
 
 const AllowedRolesToUseApp = [ 'osfc_manager', 'osfc_employee' ];
 const HumanRole = {
@@ -34,10 +35,9 @@ const ExecutionEnvironment = {
   StoreClient: 'storeClient',
 };
 
-
 export { 
   GALLERY_STORAGE_KEY, BARCODES_STORAGE_KEY, 
-  USER_SETTINGS_KEY, USER_STORE_KEY,
+  USER_SETTINGS_KEY, USER_STORE_KEY, DEAFAULT_PUSH_NOTIFY_SERVER,
   AllowedRolesToUseApp, HumanRole, YesNoEnum,
   PreviewOnlyExts, ApisServersList, ExecutionEnvironment,
 };
