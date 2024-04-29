@@ -81,24 +81,35 @@ const registerForPushNotificationsAsync = async ({ handleError }) => {
     }
 
     if (finalStatus !== 'granted') {
-      handleError('Permission not granted to get push token for push notification!');
+      handleError({
+        title: 'Permissions Error',
+        message: 'Permission not granted to get push token for push notification!',
+      });
       return;
     }
 
-    const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? 
-      Constants?.easConfig?.projectId;
+    const projectId = Constants?.expoConfig?.extra?.eas?.projectId;
     if (!projectId) {
-      handleError('Project ID not found');
+      handleError({
+        title: 'Id Error',
+        message: 'Project ID not found',
+      });
     }
-  
+ 
     try {
       const { data } = await Notifications.getExpoPushTokenAsync({ projectId });
       return data;
     } catch (e) {
-      handleError(`${e}`);
+      handleError({
+        title: 'Token Error',
+        message: JSON.stringify(e),
+      });
     };
   } else {
-    handleError('Must use physical device for push notifications');
+    handleError({
+      title: 'Device Error',
+      message: 'Must use physical device for push notifications',
+    });
   };
 };
 
@@ -115,7 +126,7 @@ const ExperimentalPushNotificationsScreen = () => {
   useEffect(() => {
     registerForPushNotificationsAsync({ handleError: setError })
       .then((token) => setExpoPushToken(token ?? ''))
-      .catch((error) => setError(error));
+      .catch((error) => setError({ title: 'Unexcepted Error', message: JSON.stringify(error) }));
   }, []);
 
   const onPushSubmit = async (data) => {

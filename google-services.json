@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "668753758317",
+    "project_id": "first-parser-405301",
+    "storage_bucket": "first-parser-405301.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:668753758317:android:f5ea3072f7d2e5e9b8d764",
+        "android_client_info": {
+          "package_name": "com.wizak.OSFCEmployeeAPP"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhyKjrjIuA8_aoBxChaVENGRK4aEGoQkU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
