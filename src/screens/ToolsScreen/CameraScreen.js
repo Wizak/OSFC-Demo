@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, memo } from 'react'
-import { Image, TouchableOpacity, TouchableWithoutFeedback, StyleSheet } from 'react-native';
+import { Image, TouchableOpacity, StyleSheet } from 'react-native';
 import * as ImagePicker from "expo-image-picker";
 import ImageView from "react-native-image-viewing";
 
@@ -124,6 +124,7 @@ const CameraScreen = () => {
   const imagesTilesData = React.useMemo(() => (
     fileUris.map(fileUri => ({ source: { uri: fileUri } }))
   ));
+  console.log(selectedFileUri);
 
   return (
     <Background>

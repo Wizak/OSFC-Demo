@@ -46,6 +46,8 @@
     "react-native-swiper": "^1.6.0",
     "react-native-toast-message": "^2.2.0",
     "react-native-vector-icons": "^10.0.3",
+    "react-native-webview": "7.4.3",
+    "rn-pdf-reader-js": "^4.1.1",
     "zod": "^3.22.5"
   },
   "devDependencies": {

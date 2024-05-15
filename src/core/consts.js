@@ -15,7 +15,9 @@ const YesNoEnum = {
   true: 'Yes',
 };
 
-const PreviewOnlyExts = ['gif', 'jpg', 'jpeg', 'png', 'pdf'];
+const ImagePreviewExts = ['gif', 'jpg', 'jpeg', 'png'];
+const DocPreviewExts = ['pdf'];
+const PreviewOnlyExts = [ ...ImagePreviewExts, ...DocPreviewExts];
 const ApisServersList = [
   {
     label: 'OSFC Production Server',
@@ -38,6 +40,6 @@ const ExecutionEnvironment = {
 export { 
   GALLERY_STORAGE_KEY, BARCODES_STORAGE_KEY, 
   USER_SETTINGS_KEY, USER_STORE_KEY, DEAFAULT_PUSH_NOTIFY_SERVER,
-  AllowedRolesToUseApp, HumanRole, YesNoEnum,
-  PreviewOnlyExts, ApisServersList, ExecutionEnvironment,
+  AllowedRolesToUseApp, HumanRole, YesNoEnum, ImagePreviewExts,
+  DocPreviewExts, PreviewOnlyExts, ApisServersList, ExecutionEnvironment,
 };

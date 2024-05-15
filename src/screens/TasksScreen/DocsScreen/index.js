@@ -2,23 +2,28 @@ import React, { memo, useEffect, useState, useCallback } from 'react';
 import { ScrollView, RefreshControl, StyleSheet } from 'react-native';
 import { List, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import PDFReader from 'rn-pdf-reader-js';
+import ImageView from "react-native-image-viewing";
 
 import Background from '../../../components/Background';
 import Divider from '../../../components/Divider';
 import LoaderMask from '../../../components/LoaderMask';
 import DialogAlertMsg from '../../../components/dialogs/DialogAlertMsg';
 import DocItem from './DocListItem';
+import CommonModal from '../../../components/dialogs/CommonModal';
 
 import { httpClient } from '../../../core/httpClient';
 import { useAuth } from '../../../contexts/auth';
 import { useStore } from '../../../contexts/store';
 import { useResponsibleViewStyle } from '../../../hooks/useResponsibleViewStyle';
+import { ImagePreviewExts, DocPreviewExts } from '../../../core/consts';
 
 
 const DocsScreen = () => {
   const [ data, setData ] = useState(null);
   const [ error, setError ] = useState(null);
-  const [ refreshing, setRefreshing ] = React.useState(false);
+  const [ refreshing, setRefreshing ] = useState(false);
+  const [ selectedFilePreview, setSelectedFilePreview ] = useState(null);
 
   const { dynamicStyles, onViewLayout } = useResponsibleViewStyle({ 
     minHeight: 400, aroundSpaceHeight: 220 });
@@ -27,6 +32,10 @@ const DocsScreen = () => {
 
   const { permissions } = getState();
   const { apiUrl, currentTaskId } = getStoreState();
+  const isImageVisible = !!selectedFilePreview && 
+    ImagePreviewExts.includes(selectedFilePreview.src.split('.').pop());
+  const isPdfVisible = !!selectedFilePreview && 
+    DocPreviewExts.includes(selectedFilePreview.src.split('.').pop());
 
   useEffect(() => {
     fetchTaskDocs();
@@ -49,6 +58,10 @@ const DocsScreen = () => {
     await fetchTaskDocs();
     setRefreshing(false);
   }, [ currentTaskId, fetchTaskDocs ]);
+
+  const onDocPreview = (docData) => {
+    setSelectedFilePreview(docData);
+  };
 
   if (error) {
     return (
@@ -84,7 +97,11 @@ const DocsScreen = () => {
                 {data.length !== 0 ? data.map((docData, index) => (
                   <React.Fragment key={`${docData.id}-${index}`}>
                     <Divider />
-                    <DocItem docData={docData} setError={setError} />
+                    <DocItem 
+                      docData={docData} 
+                      setError={setError} 
+                      onPreview={onDocPreview}
+                    />
                   </React.Fragment>
                 )): (
                   <React.Fragment>
@@ -95,12 +112,31 @@ const DocsScreen = () => {
               </ScrollView>
             </SafeAreaView>
           </List.Section>
+
           <DialogAlertMsg 
             title={error?.title} 
             message={error?.message} 
             isVisible={!!error}
             onClose={() => setError(null)}
           />
+          <ImageView
+            images={[selectedFilePreview]}
+            imageIndex={0}
+            visible={isImageVisible}
+            onRequestClose={() => setSelectedFilePreview(null)}
+          />
+          <CommonModal 
+            isVisible={isPdfVisible}
+            onClose={() => setSelectedFilePreview(null)}
+          >
+            {!!selectedFilePreview ?
+              <PDFReader 
+                source={{ uri: selectedFilePreview.uri }} 
+                withPinchZoom
+                withScroll
+              />
+            : null}
+          </CommonModal>
         </ScrollView>
       </SafeAreaView>
     </Background>
