@@ -19,25 +19,12 @@ const CommonModal = ({
 
 const styles = StyleSheet.create({
   modal: {
-    padding: 10,
-    margin: 20,
+    margin: 10,
   },
-  // buttonIcon: {
-  //   margin: 10,
-  // },
   content: {
     backgroundColor: 'white',
     height: '90%',
   },
-  // button: {
-  //   flex: 1,
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  // },
-  // buttonText: {
-  //   fontSize: 14,
-  //   fontWeight: '600',
-  // },
 });
 
 

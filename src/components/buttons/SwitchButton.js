@@ -4,7 +4,6 @@ import { Switch, Text } from 'react-native-paper';
 
 
 const SwitchButton = ({ value, onValueChange, label, ...rest }) => {
-  console.log("SWITCH value", value);
   const labelText = (
     (label && label(value)) || 
     (value ? 'ON' : 'OFF')

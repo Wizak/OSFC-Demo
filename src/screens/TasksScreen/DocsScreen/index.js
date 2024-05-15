@@ -1,8 +1,8 @@
 import React, { memo, useEffect, useState, useCallback } from 'react';
-import { ScrollView, RefreshControl, StyleSheet } from 'react-native';
+import { View, ScrollView, RefreshControl, StyleSheet } from 'react-native';
 import { List, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import PDFReader from 'rn-pdf-reader-js';
+import Pdf from "react-native-pdf";
 import ImageView from "react-native-image-viewing";
 
 import Background from '../../../components/Background';
@@ -24,6 +24,7 @@ const DocsScreen = () => {
   const [ error, setError ] = useState(null);
   const [ refreshing, setRefreshing ] = useState(false);
   const [ selectedFilePreview, setSelectedFilePreview ] = useState(null);
+  const [ isLoading, setIsLoading ] = useState(false);
 
   const { dynamicStyles, onViewLayout } = useResponsibleViewStyle({ 
     minHeight: 400, aroundSpaceHeight: 220 });
@@ -61,6 +62,7 @@ const DocsScreen = () => {
 
   const onDocPreview = (docData) => {
     setSelectedFilePreview(docData);
+    setIsLoading(true);
   };
 
   if (error) {
@@ -123,20 +125,25 @@ const DocsScreen = () => {
             images={[selectedFilePreview]}
             imageIndex={0}
             visible={isImageVisible}
-            onRequestClose={() => setSelectedFilePreview(null)}
+            onRequestClose={() => {
+              setSelectedFilePreview(null); 
+              setIsLoading(false);
+            }}
           />
           <CommonModal 
             isVisible={isPdfVisible}
             onClose={() => setSelectedFilePreview(null)}
           >
             {!!selectedFilePreview ?
-              <PDFReader 
-                source={{ uri: selectedFilePreview.uri }} 
-                withPinchZoom
-                withScroll
+              <Pdf 
+                style={{ flex: 1 }}
+                source={{ uri: selectedFilePreview.uri, cache: true }} 
+                onError={(error) => setError(JSON.stringify(error))}
+                onLoadComplete={() => setIsLoading(false)}
               />
             : null}
           </CommonModal>
+          {isLoading ? <LoaderMask /> : null}
         </ScrollView>
       </SafeAreaView>
     </Background>

@@ -124,7 +124,6 @@ const CameraScreen = () => {
   const imagesTilesData = React.useMemo(() => (
     fileUris.map(fileUri => ({ source: { uri: fileUri } }))
   ));
-  console.log(selectedFileUri);
 
   return (
     <Background>
